@@ -59,6 +59,9 @@ services:
       Smtp__Password: "${SMTP_PASSWORD:-}"
       Smtp__FromEmail: "${SMTP_FROM_EMAIL:-no-reply@zappycrm.com}"
       Smtp__FromName: "Zappy CRM"
+      MercadoPago__AccessToken: "${MERCADOPAGO_ACCESS_TOKEN:-CHANGE_ME}"
+      MercadoPago__WebhookBaseUrl: "${MERCADOPAGO_WEBHOOK_BASE_URL:-}"
+      App__PublicUrl: "${APP_PUBLIC_URL:-}"
       Cors__AllowedOrigin: "http://localhost:4200"
     ports:
       - "5000:8080"

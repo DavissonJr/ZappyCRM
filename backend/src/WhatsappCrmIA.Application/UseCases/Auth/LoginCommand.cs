@@ -34,6 +34,16 @@ public class LoginHandler : IRequestHandler<LoginCommand, AuthResult>
         if (tenant is null || !tenant.IsActive)
             return new AuthResult(false, null, "Essa conta está temporariamente desativada. Fale com o suporte.");
 
+        // Não bloqueia o login quando o trial acaba — a pessoa precisa conseguir
+        // entrar pra chegar na tela de Assinatura e pagar. Só atualiza o status
+        // pra o frontend saber mostrar o aviso.
+        if (tenant.SubscriptionStatus == Domain.Enums.SubscriptionStatus.TrialActive
+            && DateTime.UtcNow > tenant.TrialEndsAtUtc)
+        {
+            tenant.SubscriptionStatus = Domain.Enums.SubscriptionStatus.TrialExpired;
+            await _db.SaveChangesAsync(ct);
+        }
+
         var token = _jwtTokenService.GenerateToken(user, user.TenantId);
         return new AuthResult(true, token, null);
     }

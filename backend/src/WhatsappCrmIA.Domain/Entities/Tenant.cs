@@ -24,6 +24,13 @@ public class Tenant
     /// </summary>
     public string TimeZoneId { get; set; } = "America/Sao_Paulo";
 
+    // ---- Assinatura (Mercado Pago) ----
+    public SubscriptionStatus SubscriptionStatus { get; set; } = SubscriptionStatus.TrialActive;
+    public DateTime TrialEndsAtUtc { get; set; } = DateTime.UtcNow.AddDays(14);
+    public string? MercadoPagoPreapprovalId { get; set; }
+    public DateTime? CurrentPeriodEndUtc { get; set; }
+    public DateTime? SubscriptionCancelledAtUtc { get; set; }
+
     // Config do agente de IA para este tenant
     public AiAgentConfig? AiAgentConfig { get; set; }
 

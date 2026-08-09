@@ -57,6 +57,17 @@ public class CreateWhatsAppConnectionHandler
         if (string.IsNullOrWhiteSpace(request.Label))
             return new CreateConnectionResult(false, null, "Dê um nome para o número (ex: Recepção).");
 
+        var tenant = await _db.Tenants.FirstOrDefaultAsync(t => t.Id == tenantId, ct);
+        var planLimit = Domain.Common.PlanCatalog.Get(tenant?.Plan ?? Domain.Enums.PlanTier.Trial).MaxWhatsAppConnections;
+        if (planLimit != Domain.Common.PlanCatalog.UnlimitedMarker)
+        {
+            var currentCount = await _db.WhatsAppConnections.CountAsync(ct);
+            if (currentCount >= planLimit)
+                return new CreateConnectionResult(false, null,
+                    $"Seu plano atual permite até {planLimit} número(s) de WhatsApp. " +
+                    "Faça upgrade em Configurações → Assinatura pra conectar mais.");
+        }
+
         // Nome de instância único e legível: tenant + label + sufixo curto.
         var slug = request.Label.Trim().ToLowerInvariant()
             .Normalize(System.Text.NormalizationForm.FormD);

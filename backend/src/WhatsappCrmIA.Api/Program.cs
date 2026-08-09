@@ -37,6 +37,7 @@ builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 // ---- Integrações externas ----
 builder.Services.AddHttpClient<IWhatsAppGateway, EvolutionApiWhatsAppGateway>();
 builder.Services.AddHttpClient<IAiAgentService, ClaudeAiAgentService>();
+builder.Services.AddHttpClient<IPaymentGateway, MercadoPagoGateway>();
 
 // ---- Autenticação (hash de senha + emissão de JWT próprio) ----
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();

@@ -51,6 +51,9 @@ propostas comerciais, e dá visibilidade de tudo isso num dashboard.
   com segmentação (sem agendamento há X dias, sem conversa há X dias, busca) e envio
   gradual em segundo plano (Hangfire) com intervalo configurável entre cada mensagem —
   protege o número contra bloqueio por disparo em massa
+- **Cobrança da assinatura via Mercado Pago**: 3 planos fixos (Starter/Pro/Business),
+  checkout hospedado pelo Mercado Pago (Pix, cartão, boleto), limites de número de
+  WhatsApp e usuários aplicados automaticamente por plano, trial de 14 dias
 - **Dashboard** com métricas (contatos, mensagens, conversas, agendamentos, propostas,
   uso de IA) e gráficos (Chart.js)
 - **Painel administrativo da plataforma** (`/admin`) — só visível pra quem administra
@@ -131,6 +134,30 @@ SMTP_FROM_EMAIL=seu-email@gmail.com
 
 Qualquer outro provedor SMTP (SendGrid, Mailgun, Amazon SES, etc.) funciona do
 mesmo jeito — só trocar host/porta/credenciais.
+
+#### Configurando o Mercado Pago (cobrança da assinatura)
+
+1. Cria uma aplicação em https://www.mercadopago.com.br/developers/panel/app
+2. Pega o **Access Token de TESTE** primeiro (tem um seletor Produção/Teste no
+   painel) — assim você testa sem mexer com dinheiro de verdade
+3. O Mercado Pago precisa mandar notificações de pagamento pra uma URL
+   **pública** da sua API (não aceita `localhost`). Pra testar local, expõe
+   sua API com [ngrok](https://ngrok.com/download):
+   ```powershell
+   ngrok http 5000
+   ```
+   Isso te dá uma URL tipo `https://abc123.ngrok-free.app`.
+4. No `.env`:
+   ```
+   MERCADOPAGO_ACCESS_TOKEN=TEST-xxxxxxxx
+   MERCADOPAGO_WEBHOOK_BASE_URL=https://abc123.ngrok-free.app
+   ```
+5. `docker compose up --build` de novo (toda vez que a URL do ngrok mudar,
+   que muda a cada reinício dele no plano grátis, atualiza essa variável e
+   sobe de novo)
+
+Cada assinatura já nasce configurada pra notificar essa URL automaticamente —
+não precisa clicar em nada no painel do Mercado Pago.
 
 ### 3. Gerar e aplicar as migrations
 

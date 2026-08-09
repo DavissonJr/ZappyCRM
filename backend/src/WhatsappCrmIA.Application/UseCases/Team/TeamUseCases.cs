@@ -55,6 +55,17 @@ public class InviteTeamMemberHandler : IRequestHandler<InviteTeamMemberCommand, 
         var emailTaken = await _db.Users.AnyAsync(u => u.Email == request.Email, ct);
         if (emailTaken) return (false, "Esse e-mail já está em uso.");
 
+        var tenant = await _db.Tenants.FirstOrDefaultAsync(t => t.Id == tenantId, ct);
+        var planLimit = Domain.Common.PlanCatalog.Get(tenant?.Plan ?? Domain.Enums.PlanTier.Trial).MaxUsers;
+        if (planLimit != Domain.Common.PlanCatalog.UnlimitedMarker)
+        {
+            var currentCount = await _db.Users.IgnoreQueryFilters().CountAsync(u => u.TenantId == tenantId, ct);
+            if (currentCount >= planLimit)
+                return (false,
+                    $"Seu plano atual permite até {planLimit} usuário(s). " +
+                    "Faça upgrade em Configurações → Assinatura pra adicionar mais.");
+        }
+
         _db.Users.Add(new User
         {
             TenantId = tenantId,

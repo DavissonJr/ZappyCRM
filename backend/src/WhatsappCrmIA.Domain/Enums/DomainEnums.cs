@@ -102,3 +102,12 @@ public enum BulkRecipientStatus
     Failed = 3,
     Skipped = 4
 }
+
+public enum SubscriptionStatus
+{
+    TrialActive = 1,
+    Active = 2,
+    PastDue = 3,
+    Cancelled = 4,
+    TrialExpired = 5
+}

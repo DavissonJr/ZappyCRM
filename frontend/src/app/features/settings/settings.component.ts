@@ -2,9 +2,11 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { SettingsService } from '../../core/services/settings.service';
+import { SubscriptionService } from '../../core/services/subscription.service';
 import { AiAgentConfig, AiUsageSummary, Me, TeamMember, TenantSettings } from '../../core/models/settings.model';
+import { SubscriptionStatus } from '../../core/models/subscription.model';
 
-type SettingsTab = 'perfil' | 'empresa' | 'ia' | 'creditos' | 'equipe';
+type SettingsTab = 'perfil' | 'empresa' | 'ia' | 'creditos' | 'assinatura' | 'equipe';
 
 @Component({
   selector: 'app-settings',
@@ -15,8 +17,14 @@ type SettingsTab = 'perfil' | 'empresa' | 'ia' | 'creditos' | 'equipe';
 })
 export class SettingsComponent implements OnInit {
   private service = inject(SettingsService);
+  private subscriptionService = inject(SubscriptionService);
 
   activeTab = signal<SettingsTab>('perfil');
+
+  // Assinatura
+  subscription = signal<SubscriptionStatus | null>(null);
+  subscribing = signal<string | null>(null); // qual plano está sendo processado
+  cancelling = signal(false);
 
   // Perfil
   me = signal<Me | null>(null);
@@ -83,6 +91,7 @@ export class SettingsComponent implements OnInit {
     this.loadAiConfig();
     this.loadTeam();
     this.loadAiUsage();
+    this.loadSubscription();
   }
 
   setTab(tab: SettingsTab): void {
@@ -307,5 +316,41 @@ export class SettingsComponent implements OnInit {
   // ---- Créditos de IA ----
   loadAiUsage(): void {
     this.service.getAiUsage().subscribe((data) => this.aiUsage.set(data));
+  }
+
+  // ---- Assinatura ----
+  loadSubscription(): void {
+    this.subscriptionService.get().subscribe((data) => this.subscription.set(data));
+  }
+
+  subscribeToPlan(tier: string): void {
+    if (!confirm(`Você será redirecionado ao Mercado Pago pra concluir o pagamento do plano ${tier}. Continuar?`)) return;
+
+    this.subscribing.set(tier);
+    this.subscriptionService.createCheckout(tier).subscribe({
+      next: (res) => {
+        window.location.href = res.checkoutUrl;
+      },
+      error: (err) => {
+        this.subscribing.set(null);
+        alert(err?.error?.message ?? 'Não foi possível iniciar o pagamento.');
+      },
+    });
+  }
+
+  cancelSubscription(): void {
+    if (!confirm('Cancelar sua assinatura? Você perde acesso aos recursos do plano pago.')) return;
+
+    this.cancelling.set(true);
+    this.subscriptionService.cancel().subscribe({
+      next: () => {
+        this.cancelling.set(false);
+        this.loadSubscription();
+      },
+      error: (err) => {
+        this.cancelling.set(false);
+        alert(err?.error?.message ?? 'Não foi possível cancelar a assinatura.');
+      },
+    });
   }
 }
