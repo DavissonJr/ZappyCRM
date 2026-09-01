@@ -1,9 +1,12 @@
 # Zappy CRM — WhatsApp CRM com IA
 
-SaaS multi-tenant para pequenas empresas (clínicas, oficinas, advocacia, imobiliárias
-e afins) não perderem clientes por demora no WhatsApp: conecta o número da empresa,
-responde automaticamente com IA, agenda retornos e envia lembretes sozinho, gera
-propostas comerciais, e dá visibilidade de tudo isso num dashboard.
+Sistema de gerenciamento de clientes via WhatsApp, operado por você e ofertado pra
+comércios locais (clínicas, oficinas, advocacia, imobiliárias e afins). Não é um SaaS
+de auto-cadastro — **você cria e gerencia cada empresa cliente pelo seu painel
+administrativo**; depois de criada, o dono da empresa consegue editar as próprias
+configurações, trocar senha, etc. O sistema conecta o número da empresa, responde
+automaticamente com IA, agenda retornos e envia lembretes sozinho, gera propostas
+comerciais, e dá visibilidade de tudo isso num dashboard.
 
 ## Stack
 
@@ -22,8 +25,9 @@ propostas comerciais, e dá visibilidade de tudo isso num dashboard.
 
 - **Multi-tenant** de verdade: cada empresa (tenant) tem seus próprios dados, isolados
   por `TenantId` com query filters automáticos no EF Core
-- **Autenticação** (registro com confirmação por código de e-mail — ajuda contra
-  bots — e login com JWT), gestão de equipe (convidar atendentes, ativar/desativar)
+- **Você cria cada empresa direto pelo painel Admin** (nome, segmento, plano, dono,
+  senha temporária) — não existe auto-cadastro público. O dono da empresa loga com
+  essas credenciais e edita o próprio perfil/senha depois em Configurações
 - **Múltiplos números de WhatsApp por empresa**, com QR code, desconectar, remover,
   e configuração automática de webhook (você não precisa configurar nada manualmente
   na Evolution API — o sistema faz isso sozinho ao criar o número)
@@ -46,19 +50,19 @@ propostas comerciais, e dá visibilidade de tudo isso num dashboard.
   do horário, disparados por jobs do Hangfire mesmo com ninguém no painel
 - **Propostas comerciais geradas por IA**: a partir de uma conversa, gera um rascunho
   que o atendente revisa, edita e envia pelo WhatsApp
-- **Página de Contatos**: busca, filtro por status, edição (nome/observações/bloqueio)
-- **Campanhas de mensagem em lote**: manda mensagem pra vários contatos de uma vez,
-  com segmentação (sem agendamento há X dias, sem conversa há X dias, busca) e envio
-  gradual em segundo plano (Hangfire) com intervalo configurável entre cada mensagem —
-  protege o número contra bloqueio por disparo em massa
-- **Cobrança da assinatura via Mercado Pago**: 3 planos fixos (Starter/Pro/Business),
-  checkout hospedado pelo Mercado Pago (Pix, cartão, boleto), limites de número de
-  WhatsApp e usuários aplicados automaticamente por plano, trial de 14 dias
+- **Página de Contatos**: busca, filtro por status, **filtro de inatividade** (sem
+  conversa/sem agendamento há X dias — pra achar quem não retorna), edição
+  (nome/observações/bloqueio)
+- **Campanhas de mensagem em lote** — código pronto, mas **bloqueado no menu de
+  propósito**: com a Evolution API (WhatsApp não-oficial), o risco de bloqueio do
+  número em disparo em massa é alto demais. Fica reservado pra quando integrarmos a
+  API oficial da Meta (Graph API)
 - **Dashboard** com métricas (contatos, mensagens, conversas, agendamentos, propostas,
   uso de IA) e gráficos (Chart.js)
-- **Painel administrativo da plataforma** (`/admin`) — só visível pra quem administra
-  o SaaS, não pros clientes: lista todas as empresas cadastradas com métricas agregadas,
-  permite suspender/reativar uma empresa
+- **Painel administrativo** (`/admin`) — só visível pra quem administra o sistema (você):
+  cria empresas novas, troca o plano/limite de cada uma manualmente (sem cobrança
+  automática — você decide e ajusta conforme o combinado com o cliente), lista todas
+  com métricas agregadas, permite suspender/reativar uma empresa
 - **Modo escuro**, **totalmente responsivo** (sidebar vira menu hambúrguer e o Inbox
   vira tela cheia no celular), **loading global** que bloqueia ações duplicadas
   durante requisições, sistema de **toast** pra feedback
@@ -67,10 +71,11 @@ propostas comerciais, e dá visibilidade de tudo isso num dashboard.
 
 ## O que ainda não existe
 
-- **Cobrança do próprio SaaS**: hoje todo tenant nasce como "Trial" pra sempre — não
-  tem Stripe/Mercado Pago integrado ainda pra você cobrar dos seus clientes
 - **Testes automatizados**
 - **HTTPS/segurança de produção**: segredos de exemplo, sem rate limiting
+- **Rate limiting no login** (proteção anti-força-bruta na tela de login)
+- **Integração oficial com a Meta (WhatsApp Cloud API)**: enquanto isso não existir,
+  Campanhas fica bloqueada de propósito (ver acima)
 - Fuso horário do tenant é fixo em `America/Sao_Paulo` — não tem tela pra trocar ainda
 
 ## Estrutura
@@ -111,14 +116,14 @@ C:\Users\<voce>\AppData\Local\Programs\DockerDesktop\resources\bin
 cp .env.example .env
 ```
 
-A chave da Anthropic **não é mais global** — cada empresa cadastra a própria pela
-tela de Configurações. O que precisa mesmo estar no `.env` é o **SMTP**, usado pra
-mandar o código de confirmação de e-mail no cadastro (ver seção abaixo).
+A chave da Anthropic **não é mais global** — cada empresa tem a própria chave,
+cadastrada pela tela de Configurações depois que você cria a conta dela. O que
+precisa mesmo estar no `.env` é o **SMTP**, usado pra e-mails transacionais.
 
-#### Configurando o SMTP (obrigatório pra cadastro funcionar de verdade)
+#### Configurando o SMTP
 
-Sem isso configurado, o sistema não trava — ele só **loga** o código no console
-da API em vez de mandar e-mail de verdade (útil pra testar localmente sem SMTP).
+Sem isso configurado, o sistema não trava — funciona normalmente, só não manda
+e-mails de verdade.
 
 Exemplo rápido com Gmail:
 1. Ative a verificação em duas etapas na sua conta Google (se ainda não tiver)
@@ -134,30 +139,6 @@ SMTP_FROM_EMAIL=seu-email@gmail.com
 
 Qualquer outro provedor SMTP (SendGrid, Mailgun, Amazon SES, etc.) funciona do
 mesmo jeito — só trocar host/porta/credenciais.
-
-#### Configurando o Mercado Pago (cobrança da assinatura)
-
-1. Cria uma aplicação em https://www.mercadopago.com.br/developers/panel/app
-2. Pega o **Access Token de TESTE** primeiro (tem um seletor Produção/Teste no
-   painel) — assim você testa sem mexer com dinheiro de verdade
-3. O Mercado Pago precisa mandar notificações de pagamento pra uma URL
-   **pública** da sua API (não aceita `localhost`). Pra testar local, expõe
-   sua API com [ngrok](https://ngrok.com/download):
-   ```powershell
-   ngrok http 5000
-   ```
-   Isso te dá uma URL tipo `https://abc123.ngrok-free.app`.
-4. No `.env`:
-   ```
-   MERCADOPAGO_ACCESS_TOKEN=TEST-xxxxxxxx
-   MERCADOPAGO_WEBHOOK_BASE_URL=https://abc123.ngrok-free.app
-   ```
-5. `docker compose up --build` de novo (toda vez que a URL do ngrok mudar,
-   que muda a cada reinício dele no plano grátis, atualiza essa variável e
-   sobe de novo)
-
-Cada assinatura já nasce configurada pra notificar essa URL automaticamente —
-não precisa clicar em nada no painel do Mercado Pago.
 
 ### 3. Gerar e aplicar as migrations
 
@@ -189,21 +170,61 @@ cd backend
 dotnet ef database update --project src/WhatsappCrmIA.Infrastructure --startup-project src/WhatsappCrmIA.Api --connection "Host=localhost;Port=5432;Database=whatsappcrmia;Username=postgres;Password=postgres"
 ```
 
-### 6. Criar sua conta
+### 6. Bootstrap: criar sua própria conta e virar admin
 
-Abra **http://localhost:4200/register**, cadastre sua empresa. Você cai direto no
-Dashboard, autenticado.
+Não existe mais tela pública de cadastro — mas o endpoint da API que cria conta
+continua existindo por baixo (só a telinha pública que tiramos). Usa ele **uma
+única vez**, pra criar a sua própria conta:
 
-### 7. Conectar um número de WhatsApp
+```powershell
+Invoke-RestMethod -Uri "http://localhost:5000/api/auth/register" -Method Post -ContentType "application/json" -Body (@{
+  companyName = "Minha Empresa (admin)"
+  segment = "outro"
+  fullName = "Seu Nome"
+  email = "seu-email@aqui.com"
+  password = "uma-senha-forte-aqui"
+} | ConvertTo-Json)
+```
 
-Tela **Números WhatsApp** → "Conectar número" → escaneia o QR code. O webhook é
-configurado automaticamente, não precisa fazer nada manual na Evolution API.
+Isso manda um código de 6 dígitos pro seu e-mail (ou aparece no log da API, se o
+SMTP não estiver configurado — `docker compose logs api --since 2m`). Confirma com:
 
-### 8. Configurar a IA
+```powershell
+Invoke-RestMethod -Uri "http://localhost:5000/api/auth/verify-registration" -Method Post -ContentType "application/json" -Body (@{
+  email = "seu-email@aqui.com"
+  code = "123456"
+} | ConvertTo-Json)
+```
 
-Tela **Configurações → Agente de IA** → cadastra sua chave da Anthropic (pega em
-https://console.anthropic.com) → ajusta o `system prompt`, horário de atendimento,
-e se quer aprovação humana antes de enviar.
+Agora vira admin da plataforma (troca o e-mail pelo que você usou acima):
+
+```powershell
+$sql = @'
+UPDATE "Users" SET "IsPlatformAdmin" = true WHERE "Email" = 'seu-email@aqui.com';
+'@
+$sql | docker compose exec -T postgres psql -U postgres -d whatsappcrmia
+```
+
+Pronto — vai em **http://localhost:4200/login**, entra com esse e-mail/senha, e o
+item **"Admin"** (laranja) aparece na sidebar.
+
+### 7. Criar sua primeira empresa cliente
+
+No painel `/admin` → **"+ Criar empresa"** — preenche nome, segmento, plano, e os
+dados do dono. Isso cria o Tenant e o usuário dono direto, e mostra a senha
+temporária **uma vez só** (anota ela) — repassa e-mail/senha pro cliente.
+
+### 8. Conectar um número de WhatsApp
+
+Desloga e loga como o dono da empresa que você acabou de criar (ou abre uma aba
+anônima). Tela **Números WhatsApp** → "Conectar número" → escaneia o QR code. O
+webhook é configurado automaticamente, não precisa fazer nada manual na Evolution API.
+
+### 9. Configurar a IA
+
+Tela **Configurações → Agente de IA** → cadastra a chave da Anthropic dessa
+empresa (pega em https://console.anthropic.com) → ajusta o `system prompt`,
+horário de atendimento, e se quer aprovação humana antes de enviar.
 
 ## Serviços e URLs
 
@@ -213,29 +234,6 @@ e se quer aprovação humana antes de enviar.
 | API (Swagger) | http://localhost:5000/swagger |
 | Evolution API | http://localhost:8081 |
 | Painel de jobs (Hangfire) | http://localhost:5000/jobs |
-
-## Virando admin da plataforma (você, não seus clientes)
-
-O painel `/admin` (lista todas as empresas cadastradas) só é visível pra quem tem a
-flag `IsPlatformAdmin = true` no próprio usuário — não tem como ativar isso pela
-interface por segurança, é ligado direto no banco.
-
-**No PowerShell** (o `UPDATE` com aspas aninhadas quebra se você tentar com `-c`
-direto — use um here-string em vez disso):
-```powershell
-$sql = @'
-UPDATE "Users" SET "IsPlatformAdmin" = true WHERE "Email" = 'seu-email@aqui.com';
-'@
-$sql | docker compose exec -T postgres psql -U postgres -d whatsappcrmia
-```
-
-**No Linux/Mac** (bash), o `-c` direto funciona normalmente:
-```bash
-docker compose exec postgres psql -U postgres -d whatsappcrmia -c "UPDATE \"Users\" SET \"IsPlatformAdmin\" = true WHERE \"Email\" = 'seu-email@aqui.com';"
-```
-
-Depois disso, **deslogue e logue de novo** (o JWT precisa ser gerado de novo pra
-carregar a claim nova) — o item "Admin" aparece na sidebar, com destaque em laranja.
 
 ## Toda vez que mudar uma entidade (schema novo)
 
@@ -270,11 +268,12 @@ dotnet ef database update --project src/WhatsappCrmIA.Infrastructure --startup-p
 
 ## Roadmap sugerido (próximos passos)
 
-1. **Cobrança do SaaS**: planos, limites por plano, Stripe ou Mercado Pago
+1. **Integração oficial com a Meta (WhatsApp Cloud API)** — pré-requisito pra
+   desbloquear Campanhas com segurança
 2. **Segurança pra produção**: segredos fortes gerados de verdade, HTTPS, rate limiting
-   no login/registro/webhook
+   no login
 3. **Testes automatizados**, principalmente nos fluxos críticos (webhook, envio de
    mensagem, auth, tool use da IA)
 4. **Fuso horário configurável por tenant** (hoje fixo em América/São Paulo)
-5. **Página de boas-vindas guiada** logo após o cadastro (hoje só tem o checklist de
-   primeiros passos dentro do Inbox)
+5. **Página de boas-vindas guiada** pro dono da empresa, logo no primeiro login (hoje
+   só tem o checklist de primeiros passos dentro do Inbox)

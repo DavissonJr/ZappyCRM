@@ -18,8 +18,12 @@ public class ContactsController : ControllerBase
 
     [HttpGet]
     public async Task<ActionResult<IReadOnlyList<ContactListItemDto>>> Get(
-        [FromQuery] string? search, CancellationToken ct)
-        => Ok(await _mediator.Send(new GetContactsQuery(search), ct));
+        [FromQuery] string? search,
+        [FromQuery] int? noConversationInLastDays,
+        [FromQuery] int? noAppointmentInLastDays,
+        CancellationToken ct)
+        => Ok(await _mediator.Send(
+            new GetContactsQuery(search, noConversationInLastDays, noAppointmentInLastDays), ct));
 
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateContactRequest request, CancellationToken ct)

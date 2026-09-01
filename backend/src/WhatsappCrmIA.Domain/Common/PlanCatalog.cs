@@ -26,7 +26,7 @@ public static class PlanCatalog
             ["1 número de WhatsApp", "2 usuários", "14 dias grátis"]),
 
         [PlanTier.Starter] = new PlanDefinition(
-            PlanTier.Starter, "Starter", 97.00m, 1, 2,
+            PlanTier.Starter, "Starter", 5.00m, 1, 2, // TODO: preço temporário de teste — volte pra 97.00m depois!
             ["1 número de WhatsApp", "Até 2 usuários", "IA com agendamento automático"]),
 
         [PlanTier.Pro] = new PlanDefinition(

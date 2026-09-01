@@ -11,7 +11,6 @@
     <button [class.active]="activeTab() === 'empresa'" (click)="setTab('empresa')">Empresa</button>
     <button [class.active]="activeTab() === 'ia'" (click)="setTab('ia')">Agente de IA</button>
     <button [class.active]="activeTab() === 'creditos'" (click)="setTab('creditos')">Créditos de IA</button>
-    <button [class.active]="activeTab() === 'assinatura'" (click)="setTab('assinatura')">Assinatura</button>
     <button [class.active]="activeTab() === 'equipe'" (click)="setTab('equipe')">Equipe</button>
   </div>
 
@@ -242,90 +241,6 @@
           </table>
         }
       </section>
-    </div>
-  }
-
-  <!-- ASSINATURA -->
-  @if (activeTab() === 'assinatura') {
-    <div class="tab-content">
-      @if (subscription(); as sub) {
-        <section class="settings-card">
-          <h2>Sua assinatura</h2>
-
-          @if (sub.subscriptionStatus === 'TrialActive') {
-            <div class="message-banner">
-              Você está no período de teste grátis — restam {{ sub.daysLeftInTrial }} dia(s).
-            </div>
-          }
-          @if (sub.subscriptionStatus === 'TrialExpired') {
-            <div class="message-banner error">
-              Seu período de teste acabou. Assine um plano abaixo pra continuar usando o sistema sem interrupção.
-            </div>
-          }
-          @if (sub.subscriptionStatus === 'PastDue') {
-            <div class="message-banner error">
-              Não conseguimos confirmar seu último pagamento. Verifique seus dados no Mercado Pago.
-            </div>
-          }
-          @if (sub.subscriptionStatus === 'Cancelled') {
-            <div class="message-banner error">Sua assinatura foi cancelada.</div>
-          }
-
-          <div class="usage-stats">
-            <div class="usage-stat">
-              <span class="stat-value">{{ sub.currentWhatsAppConnections }}</span>
-              <span class="stat-label">números conectados</span>
-            </div>
-            <div class="usage-stat">
-              <span class="stat-value">{{ sub.currentUsers }}</span>
-              <span class="stat-label">usuários</span>
-            </div>
-          </div>
-
-          @if (sub.subscriptionStatus === 'Active') {
-            <p class="section-subtitle">
-              Plano atual: <strong>{{ sub.currentPlan }}</strong>
-              @if (sub.currentPeriodEndUtc) {
-                — próxima cobrança em {{ sub.currentPeriodEndUtc | date: 'dd/MM/yyyy' }}
-              }
-            </p>
-            <button class="btn-ghost danger" (click)="cancelSubscription()" [disabled]="cancelling()">
-              {{ cancelling() ? 'Cancelando...' : 'Cancelar assinatura' }}
-            </button>
-          }
-        </section>
-
-        <section class="settings-card">
-          <h2>Planos</h2>
-          <div class="plans-grid">
-            @for (plan of sub.availablePlans; track plan.tier) {
-              <div class="plan-card" [class.current]="plan.isCurrent">
-                @if (plan.isCurrent) {
-                  <span class="current-badge">Seu plano atual</span>
-                }
-                <h3>{{ plan.displayName }}</h3>
-                <div class="plan-price">
-                  R$ {{ plan.priceMonthly | number: '1.2-2' }}<span>/mês</span>
-                </div>
-                <ul class="plan-highlights">
-                  @for (h of plan.highlights; track h) {
-                    <li>{{ h }}</li>
-                  }
-                </ul>
-                @if (!plan.isCurrent) {
-                  <button
-                    class="btn-primary"
-                    (click)="subscribeToPlan(plan.tier)"
-                    [disabled]="subscribing() === plan.tier">
-                    {{ subscribing() === plan.tier ? 'Redirecionando...' : 'Assinar' }}
-                  </button>
-                }
-              </div>
-            }
-          </div>
-          <p class="field-hint">Pagamento processado pelo Mercado Pago — aceita Pix, cartão e boleto.</p>
-        </section>
-      }
     </div>
   }
 

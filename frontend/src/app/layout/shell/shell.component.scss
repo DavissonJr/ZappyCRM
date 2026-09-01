@@ -70,6 +70,17 @@
     &.active { background: rgba(245, 158, 11, 0.15); color: var(--amber-500, #f59e0b); }
   }
 
+  .nav-item.locked {
+    cursor: not-allowed;
+    opacity: 0.45;
+    justify-content: space-between;
+
+    &:hover { background: none; color: var(--ink-200); }
+
+    .lock-icon { flex-shrink: 0; opacity: 0.8; }
+    span { flex: 1; }
+  }
+
   .sidebar-footer {
     display: flex;
     align-items: center;

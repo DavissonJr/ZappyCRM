@@ -1,3 +1,10 @@
+export interface AdminPlanOption {
+  tier: string;
+  displayName: string;
+  maxWhatsAppConnections: number; // -1 = ilimitado
+  maxUsers: number; // -1 = ilimitado
+}
+
 export interface AdminTenantSummary {
   id: string;
   name: string;

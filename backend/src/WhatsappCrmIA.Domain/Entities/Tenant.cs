@@ -3,8 +3,10 @@ using WhatsappCrmIA.Domain.Enums;
 namespace WhatsappCrmIA.Domain.Entities;
 
 /// <summary>
-/// Representa a empresa cliente do SaaS (clínica, oficina, escritório, imobiliária...).
+/// Representa a empresa cliente (clínica, oficina, escritório, imobiliária...).
 /// Nota: Tenant não herda de BaseEntity pois ele é a raiz do isolamento multi-tenant.
+/// Empresas são criadas pelo admin da plataforma (não existe auto-cadastro público) —
+/// o plano é ajustado manualmente por quem administra o sistema, sem cobrança automática.
 /// </summary>
 public class Tenant
 {
@@ -23,13 +25,6 @@ public class Tenant
     /// agente de IA. Assume horário de Brasília por padrão.
     /// </summary>
     public string TimeZoneId { get; set; } = "America/Sao_Paulo";
-
-    // ---- Assinatura (Mercado Pago) ----
-    public SubscriptionStatus SubscriptionStatus { get; set; } = SubscriptionStatus.TrialActive;
-    public DateTime TrialEndsAtUtc { get; set; } = DateTime.UtcNow.AddDays(14);
-    public string? MercadoPagoPreapprovalId { get; set; }
-    public DateTime? CurrentPeriodEndUtc { get; set; }
-    public DateTime? SubscriptionCancelledAtUtc { get; set; }
 
     // Config do agente de IA para este tenant
     public AiAgentConfig? AiAgentConfig { get; set; }

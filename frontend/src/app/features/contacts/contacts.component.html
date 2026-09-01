@@ -26,6 +26,34 @@
     </div>
   </div>
 
+  <div class="inactivity-filters">
+    <label class="checkbox-row">
+      <input type="checkbox" [ngModel]="useNoConversationFilter()" (ngModelChange)="toggleNoConversationFilter()" />
+      Sem conversa há
+      <input
+        type="number"
+        min="1"
+        class="inline-number"
+        [disabled]="!useNoConversationFilter()"
+        [ngModel]="noConversationDays()"
+        (ngModelChange)="noConversationDays.set($event); onInactivityDaysChange()" />
+      dias
+    </label>
+
+    <label class="checkbox-row">
+      <input type="checkbox" [ngModel]="useNoAppointmentFilter()" (ngModelChange)="toggleNoAppointmentFilter()" />
+      Sem agendamento há
+      <input
+        type="number"
+        min="1"
+        class="inline-number"
+        [disabled]="!useNoAppointmentFilter()"
+        [ngModel]="noAppointmentDays()"
+        (ngModelChange)="noAppointmentDays.set($event); onInactivityDaysChange()" />
+      dias
+    </label>
+  </div>
+
   @if (loading()) {
     <p class="empty-state">Carregando...</p>
   } @else {

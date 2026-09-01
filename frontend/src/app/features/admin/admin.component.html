@@ -2,9 +2,24 @@
   <header class="page-header">
     <div>
       <h1>Painel administrativo</h1>
-      <p>Visão geral de todas as empresas cadastradas no SaaS.</p>
+      <p>Você cria e gerencia as empresas por aqui — não existe auto-cadastro público.</p>
     </div>
+    <button class="btn-primary" (click)="openCreateForm()">+ Criar empresa</button>
   </header>
+
+  @if (justCreated(); as jc) {
+    <div class="created-banner">
+      <div>
+        <strong>Empresa "{{ jc.companyName }}" criada!</strong>
+        <p>Repassa esses dados pro dono da empresa (a senha só aparece essa vez, anota agora):</p>
+        <div class="credentials-row">
+          <span><strong>E-mail:</strong> {{ jc.email }}</span>
+          <span><strong>Senha temporária:</strong> {{ jc.password }}</span>
+        </div>
+      </div>
+      <button class="btn-ghost" (click)="dismissJustCreated()">Ok, anotei</button>
+    </div>
+  }
 
   @if (loading()) {
     <p class="empty-state">Carregando...</p>
@@ -36,6 +51,7 @@
             <th>Segmento</th>
             <th>Dono</th>
             <th>Status</th>
+            <th>Plano</th>
             <th>Números</th>
             <th>Contatos</th>
             <th>Conversas</th>
@@ -63,6 +79,13 @@
                 <span class="status-dot" [class.active]="t.isActive"></span>
                 {{ t.isActive ? 'Ativa' : 'Suspensa' }}
               </td>
+              <td>
+                <select class="plan-select" [ngModel]="t.plan" (ngModelChange)="changePlan(t, $event)">
+                  @for (p of plans(); track p.tier) {
+                    <option [value]="p.tier">{{ p.displayName }}</option>
+                  }
+                </select>
+              </td>
               <td>{{ t.connectedWhatsAppCount }}/{{ t.whatsAppConnectionCount }}</td>
               <td>{{ t.contactCount }}</td>
               <td>{{ t.conversationCount }}</td>
@@ -79,10 +102,68 @@
               </td>
             </tr>
           } @empty {
-            <tr><td colspan="14">Nenhuma empresa cadastrada ainda.</td></tr>
+            <tr><td colspan="15">Nenhuma empresa cadastrada ainda. Clica em "+ Criar empresa" pra começar.</td></tr>
           }
         </tbody>
       </table>
     </div>
   }
 </div>
+
+@if (showCreateForm()) {
+  <div class="modal-backdrop" (click)="closeCreateForm()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <h3>Criar nova empresa</h3>
+      <p class="modal-subtitle">Isso cria a empresa e o usuário dono direto — sem confirmação por e-mail.</p>
+
+      <div class="field">
+        <label>Nome da empresa</label>
+        <input type="text" [(ngModel)]="newCompanyName" placeholder="Ex: Clínica Vida Nova" />
+      </div>
+
+      <div class="field">
+        <label>Segmento</label>
+        <select [(ngModel)]="newSegment">
+          @for (s of segments; track s.value) {
+            <option [value]="s.value">{{ s.label }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Plano</label>
+        <select [(ngModel)]="newPlan">
+          @for (p of plans(); track p.tier) {
+            <option [value]="p.tier">{{ p.displayName }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Nome do dono da empresa</label>
+        <input type="text" [(ngModel)]="newOwnerFullName" placeholder="Ex: Maria Silva" />
+      </div>
+
+      <div class="field">
+        <label>E-mail do dono (login dele)</label>
+        <input type="email" [(ngModel)]="newOwnerEmail" placeholder="maria@clinica.com" />
+      </div>
+
+      <div class="field">
+        <label>Senha temporária</label>
+        <div class="password-row">
+          <input type="text" [(ngModel)]="newTemporaryPassword" />
+          <button type="button" class="btn-ghost" (click)="regeneratePassword()">Gerar outra</button>
+        </div>
+        <span class="field-hint">O dono da empresa consegue trocar essa senha depois, em Configurações → Meu perfil.</span>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-ghost" (click)="closeCreateForm()">Cancelar</button>
+        <button class="btn-primary" (click)="submitCreateTenant()" [disabled]="creating()">
+          {{ creating() ? 'Criando...' : 'Criar empresa' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

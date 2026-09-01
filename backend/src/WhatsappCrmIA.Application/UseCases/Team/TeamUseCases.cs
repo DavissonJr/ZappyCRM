@@ -63,7 +63,7 @@ public class InviteTeamMemberHandler : IRequestHandler<InviteTeamMemberCommand, 
             if (currentCount >= planLimit)
                 return (false,
                     $"Seu plano atual permite até {planLimit} usuário(s). " +
-                    "Faça upgrade em Configurações → Assinatura pra adicionar mais.");
+                    "Fale com o suporte pra liberar mais usuários no seu plano atual.");
         }
 
         _db.Users.Add(new User

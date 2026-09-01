@@ -25,6 +25,11 @@ export class ContactsComponent implements OnInit {
   searchTerm = signal('');
   statusFilter = signal<StatusFilter>('all');
 
+  useNoConversationFilter = signal(false);
+  noConversationDays = signal(30);
+  useNoAppointmentFilter = signal(false);
+  noAppointmentDays = signal(30);
+
   editingContact = signal<ContactListItem | null>(null);
   editName = signal('');
   editNotes = signal('');
@@ -45,22 +50,47 @@ export class ContactsComponent implements OnInit {
 
   load(): void {
     this.loading.set(true);
-    this.service.getAll(this.searchTerm() || undefined).subscribe({
-      next: (data) => {
-        this.contacts.set(data);
-        this.loading.set(false);
-      },
-      error: () => {
-        this.loading.set(false);
-        this.toast.error('Não foi possível carregar os contatos.');
-      },
-    });
+    this.service
+      .getAll({
+        search: this.searchTerm() || undefined,
+        noConversationInLastDays: this.useNoConversationFilter() ? this.noConversationDays() : undefined,
+        noAppointmentInLastDays: this.useNoAppointmentFilter() ? this.noAppointmentDays() : undefined,
+      })
+      .subscribe({
+        next: (data) => {
+          this.contacts.set(data);
+          this.loading.set(false);
+        },
+        error: () => {
+          this.loading.set(false);
+          this.toast.error('Não foi possível carregar os contatos.');
+        },
+      });
   }
 
   onSearchChange(value: string): void {
     this.searchTerm.set(value);
     clearTimeout(this.searchDebounce);
     this.searchDebounce = setTimeout(() => this.load(), 350);
+  }
+
+  toggleNoConversationFilter(): void {
+    this.useNoConversationFilter.update((v) => !v);
+    this.load();
+  }
+
+  toggleNoAppointmentFilter(): void {
+    this.useNoAppointmentFilter.update((v) => !v);
+    this.load();
+  }
+
+  onInactivityDaysChange(): void {
+    // Só recarrega se o filtro correspondente já estiver ligado — evita
+    // requisição desnecessária enquanto a pessoa só digita o número.
+    if (this.useNoConversationFilter() || this.useNoAppointmentFilter()) {
+      clearTimeout(this.searchDebounce);
+      this.searchDebounce = setTimeout(() => this.load(), 400);
+    }
   }
 
   setStatusFilter(filter: StatusFilter): void {

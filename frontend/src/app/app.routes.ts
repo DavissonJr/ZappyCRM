@@ -1,17 +1,13 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
 import { platformAdminGuard } from './core/guards/platform-admin.guard';
+import { campaignsLockedGuard } from './core/guards/campaigns-locked.guard';
 
 export const routes: Routes = [
   {
     path: 'login',
     loadComponent: () =>
       import('./features/auth/login/login.component').then((m) => m.LoginComponent),
-  },
-  {
-    path: 'register',
-    loadComponent: () =>
-      import('./features/auth/register/register.component').then((m) => m.RegisterComponent),
   },
   {
     path: '',
@@ -39,6 +35,7 @@ export const routes: Routes = [
         path: 'campanhas',
         loadComponent: () =>
           import('./features/bulk-campaigns/bulk-campaigns.component').then((m) => m.BulkCampaignsComponent),
+        canActivate: [campaignsLockedGuard],
       },
       {
         path: 'numeros',

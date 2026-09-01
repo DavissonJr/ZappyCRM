@@ -1,5 +1,8 @@
 namespace WhatsappCrmIA.Application.DTOs;
 
+public record AdminPlanOptionDto(
+    string Tier, string DisplayName, int MaxWhatsAppConnections, int MaxUsers);
+
 public record AdminTenantSummaryDto(
     Guid Id,
     string Name,

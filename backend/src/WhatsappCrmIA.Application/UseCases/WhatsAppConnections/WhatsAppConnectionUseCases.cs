@@ -65,7 +65,7 @@ public class CreateWhatsAppConnectionHandler
             if (currentCount >= planLimit)
                 return new CreateConnectionResult(false, null,
                     $"Seu plano atual permite até {planLimit} número(s) de WhatsApp. " +
-                    "Faça upgrade em Configurações → Assinatura pra conectar mais.");
+                    "Fale com o suporte pra liberar mais números no seu plano atual.");
         }
 
         // Nome de instância único e legível: tenant + label + sufixo curto.

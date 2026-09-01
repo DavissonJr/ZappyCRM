@@ -17,3 +17,5 @@ frontend/.angular/
 
 # OS
 .DS_Store
+
+.env.txt
