@@ -58,7 +58,7 @@ public class CreateWhatsAppConnectionHandler
             return new CreateConnectionResult(false, null, "Dê um nome para o número (ex: Recepção).");
 
         var tenant = await _db.Tenants.FirstOrDefaultAsync(t => t.Id == tenantId, ct);
-        var planLimit = Domain.Common.PlanCatalog.Get(tenant?.Plan ?? Domain.Enums.PlanTier.Trial).MaxWhatsAppConnections;
+        var planLimit = Domain.Common.PlanCatalog.Get(tenant?.Plan ?? Domain.Enums.PlanTier.Starter).MaxWhatsAppConnections;
         if (planLimit != Domain.Common.PlanCatalog.UnlimitedMarker)
         {
             var currentCount = await _db.WhatsAppConnections.CountAsync(ct);

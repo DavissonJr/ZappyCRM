@@ -10,8 +10,6 @@ public record AiAgentConfigDto(
     bool AutoReplyEnabled,
     bool RequireHumanApproval,
     string BusinessHours,
-    string? FallbackMessage,
-    bool HasAnthropicApiKey,
-    string? AnthropicApiKeyPreview);
+    string? FallbackMessage);
 
 public record TeamMemberDto(Guid Id, string FullName, string Email, string Role, bool IsActive);

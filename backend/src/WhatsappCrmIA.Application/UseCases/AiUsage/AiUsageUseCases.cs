@@ -2,12 +2,14 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using WhatsappCrmIA.Application.DTOs;
 using WhatsappCrmIA.Application.Interfaces;
+using WhatsappCrmIA.Domain.Common;
+using WhatsappCrmIA.Domain.Enums;
 
 namespace WhatsappCrmIA.Application.UseCases.AiUsage;
 
-public record GetAiUsageQuery : IRequest<AiUsageSummaryDto?>;
+public record GetAiUsageQuery : IRequest<AiCreditsStatusDto?>;
 
-public class GetAiUsageHandler : IRequestHandler<GetAiUsageQuery, AiUsageSummaryDto?>
+public class GetAiUsageHandler : IRequestHandler<GetAiUsageQuery, AiCreditsStatusDto?>
 {
     private readonly IApplicationDbContext _db;
     private readonly ICurrentTenantService _currentTenant;
@@ -18,20 +20,19 @@ public class GetAiUsageHandler : IRequestHandler<GetAiUsageQuery, AiUsageSummary
         _currentTenant = currentTenant;
     }
 
-    public async Task<AiUsageSummaryDto?> Handle(GetAiUsageQuery request, CancellationToken ct)
+    public async Task<AiCreditsStatusDto?> Handle(GetAiUsageQuery request, CancellationToken ct)
     {
-        if (_currentTenant.TenantId is null) return null;
+        if (_currentTenant.TenantId is not { } tenantId) return null;
 
-        var totalInputTokens = await _db.AiUsageLogs.SumAsync(u => (int?)u.InputTokens, ct) ?? 0;
-        var totalOutputTokens = await _db.AiUsageLogs.SumAsync(u => (int?)u.OutputTokens, ct) ?? 0;
-        var totalSpent = await _db.AiUsageLogs.SumAsync(u => (decimal?)u.CostUsd, ct) ?? 0m;
+        var tenant = await _db.Tenants.FirstOrDefaultAsync(t => t.Id == tenantId, ct);
+        var planDef = PlanCatalog.Get(tenant?.Plan ?? PlanTier.Starter);
 
-        var recent = await _db.AiUsageLogs
-            .OrderByDescending(u => u.CreatedAtUtc)
-            .Take(30)
-            .Select(u => new AiUsageLogDto(u.CreatedAtUtc, u.InputTokens, u.OutputTokens, u.CostUsd))
-            .ToListAsync(ct);
+        var userCount = await _db.Users.CountAsync(u => u.TenantId == tenantId && u.IsActive, ct);
+        var budget = planDef.AiCreditsPerUserPerMonth * Math.Max(1, userCount);
 
-        return new AiUsageSummaryDto(totalInputTokens, totalOutputTokens, totalSpent, recent);
+        var monthStartUtc = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1, 0, 0, 0, DateTimeKind.Utc);
+        var usedThisMonth = await _db.AiUsageLogs.CountAsync(u => u.CreatedAtUtc >= monthStartUtc, ct);
+
+        return new AiCreditsStatusDto(planDef.DisplayName, usedThisMonth, budget, monthStartUtc);
     }
 }

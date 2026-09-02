@@ -7,10 +7,9 @@ using WhatsappCrmIA.Application.UseCases.AiUsage;
 namespace WhatsappCrmIA.Api.Controllers;
 
 /// <summary>
-/// Só leitura: mostra quantos tokens/custo estimado o tenant consumiu através
-/// do nosso app. A Anthropic não expõe uma API pública pra consultar o saldo
-/// real da conta — pra isso, o link no painel manda o tenant direto pro
-/// console.anthropic.com, onde ele vê o saldo de verdade e gerencia pagamento.
+/// Só leitura: mostra quantos créditos de IA o tenant já usou esse mês,
+/// contra o limite do plano dele. O custo real em dinheiro é informação
+/// interna, não aparece aqui — o cliente só vê "créditos".
 /// </summary>
 [ApiController]
 [Route("api/ai-usage")]
@@ -21,7 +20,7 @@ public class AiUsageController : ControllerBase
     public AiUsageController(IMediator mediator) => _mediator = mediator;
 
     [HttpGet]
-    public async Task<ActionResult<AiUsageSummaryDto>> Get(CancellationToken ct)
+    public async Task<ActionResult<AiCreditsStatusDto>> Get(CancellationToken ct)
     {
         var result = await _mediator.Send(new GetAiUsageQuery(), ct);
         return result is null ? NotFound() : Ok(result);

@@ -55,7 +55,7 @@ public class VerifyRegistrationHandler : IRequestHandler<VerifyRegistrationComma
         {
             Name = pending.CompanyName,
             Segment = pending.Segment,
-            Plan = PlanTier.Trial,
+            Plan = PlanTier.Starter,
             IsActive = true
         };
         _db.Tenants.Add(tenant);

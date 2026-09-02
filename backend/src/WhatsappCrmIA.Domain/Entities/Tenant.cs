@@ -13,7 +13,7 @@ public class Tenant
     public Guid Id { get; set; } = Guid.NewGuid();
     public string Name { get; set; } = default!;
     public string Segment { get; set; } = default!; // ex: "clinica", "oficina", "advocacia", "imobiliaria"
-    public PlanTier Plan { get; set; } = PlanTier.Trial;
+    public PlanTier Plan { get; set; } = PlanTier.Starter;
     public bool IsActive { get; set; } = true;
     public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
 

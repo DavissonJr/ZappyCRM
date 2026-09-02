@@ -15,12 +15,6 @@ public class GetOnboardingStatusHandler : IRequestHandler<GetOnboardingStatusQue
     public async Task<OnboardingStatusDto> Handle(GetOnboardingStatusQuery request, CancellationToken ct)
     {
         var hasConnectedWhatsApp = await _db.WhatsAppConnections.AnyAsync(w => w.IsConnected, ct);
-
-        var agentConfig = await _db.AiAgentConfigs.FirstOrDefaultAsync(ct);
-        var hasAnthropicApiKey = !string.IsNullOrEmpty(agentConfig?.AnthropicApiKeyEncrypted);
-
-        var hasSentOrReceivedMessage = await _db.Messages.AnyAsync(ct);
-
-        return new OnboardingStatusDto(hasConnectedWhatsApp, hasAnthropicApiKey, hasSentOrReceivedMessage);
+        return new OnboardingStatusDto(hasConnectedWhatsApp);
     }
 }

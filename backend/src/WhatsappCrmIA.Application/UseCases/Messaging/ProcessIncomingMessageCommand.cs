@@ -40,7 +40,7 @@ public class ProcessIncomingMessageHandler
     private readonly IWhatsAppGateway _whatsApp;
     private readonly ILogger<ProcessIncomingMessageHandler> _logger;
     private readonly INotificationService _notifications;
-    private readonly ISecretProtector _secretProtector;
+    private readonly IGlobalSecretsProvider _globalSecrets;
     private readonly IReminderScheduler _reminderScheduler;
 
     public ProcessIncomingMessageHandler(
@@ -49,7 +49,7 @@ public class ProcessIncomingMessageHandler
         IWhatsAppGateway whatsApp,
         ILogger<ProcessIncomingMessageHandler> logger,
         INotificationService notifications,
-        ISecretProtector secretProtector,
+        IGlobalSecretsProvider globalSecrets,
         IReminderScheduler reminderScheduler)
     {
         _db = db;
@@ -57,7 +57,7 @@ public class ProcessIncomingMessageHandler
         _whatsApp = whatsApp;
         _logger = logger;
         _notifications = notifications;
-        _secretProtector = secretProtector;
+        _globalSecrets = globalSecrets;
         _reminderScheduler = reminderScheduler;
     }
 
@@ -189,22 +189,39 @@ public class ProcessIncomingMessageHandler
             return new ProcessIncomingMessageResult(false, null);
         }
 
-        // 4.5 Cada tenant usa a PRÓPRIA chave da Anthropic (custo sai da conta
-        // dele, não da sua). Sem chave configurada, não tem como chamar a IA —
-        // mas ainda mandamos a mensagem de fallback pro cliente não ficar mudo.
-        if (string.IsNullOrEmpty(agentConfig.AnthropicApiKeyEncrypted))
+        // 4.5 Checa se ainda sobra crédito de IA no plano desse tenant esse mês.
+        // 1 crédito = 1 resposta gerada pela IA. O orçamento mensal é
+        // (créditos do plano por usuário) × (quantidade de usuários da empresa).
+        var planDef = Domain.Common.PlanCatalog.Get(tenant?.Plan ?? PlanTier.Starter);
+        var userCount = await _db.Users.CountAsync(u => u.TenantId == request.TenantId && u.IsActive, ct);
+        var monthlyBudget = planDef.AiCreditsPerUserPerMonth * Math.Max(1, userCount);
+
+        var monthStartUtc = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1, 0, 0, 0, DateTimeKind.Utc);
+        var usedThisMonth = await _db.AiUsageLogs
+            .CountAsync(u => u.TenantId == request.TenantId && u.CreatedAtUtc >= monthStartUtc, ct);
+
+        if (usedThisMonth >= monthlyBudget)
         {
             conversation.Status = ConversationStatus.WaitingHuman;
             await SendFallbackMessageAsync(agentConfig, whatsappConnection, conversation, request.FromPhoneNumber, ct);
             await _db.SaveChangesAsync(ct);
             _logger.LogWarning(
-                "Mensagem recebida, mas o tenant ainda não configurou a chave da Anthropic. Conversa={ConversationId}",
-                conversation.Id);
+                "Tenant {TenantId} estourou o limite de créditos de IA do mês ({Used}/{Budget}).",
+                request.TenantId, usedThisMonth, monthlyBudget);
             await _notifications.NotifyConversationUpdated(request.TenantId, conversation.Id);
             return new ProcessIncomingMessageResult(false, null);
         }
 
-        var anthropicApiKey = _secretProtector.Decrypt(agentConfig.AnthropicApiKeyEncrypted);
+        var anthropicApiKey = _globalSecrets.GetAnthropicApiKey();
+        if (string.IsNullOrEmpty(anthropicApiKey))
+        {
+            conversation.Status = ConversationStatus.WaitingHuman;
+            await SendFallbackMessageAsync(agentConfig, whatsappConnection, conversation, request.FromPhoneNumber, ct);
+            await _db.SaveChangesAsync(ct);
+            _logger.LogError("ANTHROPIC_API_KEY não está configurada no ambiente — nenhum tenant consegue usar a IA.");
+            await _notifications.NotifyConversationUpdated(request.TenantId, conversation.Id);
+            return new ProcessIncomingMessageResult(false, null);
+        }
 
         // 5. Monta histórico e chama a IA (Claude) — com a ferramenta de criar
         // agendamento disponível de verdade.
@@ -239,6 +256,8 @@ public class ProcessIncomingMessageHandler
 
         conversation.LastDetectedIntent = aiResult.DetectedIntent;
 
+        // Custo real (em USD) fica só como informação interna sua — o cliente não
+        // vê isso, ele só vê "créditos usados" contra o limite do plano dele.
         var costUsd = (aiResult.InputTokens / 1_000_000m) * InputCostPerMillionTokens
                      + (aiResult.OutputTokens / 1_000_000m) * OutputCostPerMillionTokens;
         _db.AiUsageLogs.Add(new AiUsageLog

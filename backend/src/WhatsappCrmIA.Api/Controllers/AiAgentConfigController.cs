@@ -14,8 +14,6 @@ public record UpdateAiAgentConfigRequest(
     string BusinessHours,
     string? FallbackMessage);
 
-public record SetAnthropicApiKeyRequest(string ApiKey);
-
 [ApiController]
 [Route("api/ai-agent-config")]
 [Authorize]
@@ -37,20 +35,6 @@ public class AiAgentConfigController : ControllerBase
         var success = await _mediator.Send(new UpdateAiAgentConfigCommand(
             request.AgentName, request.SystemPrompt, request.AutoReplyEnabled,
             request.RequireHumanApproval, request.BusinessHours, request.FallbackMessage), ct);
-        return success ? Ok() : NotFound();
-    }
-
-    [HttpPut("anthropic-api-key")]
-    public async Task<IActionResult> SetAnthropicApiKey([FromBody] SetAnthropicApiKeyRequest request, CancellationToken ct)
-    {
-        var (success, error) = await _mediator.Send(new SetAnthropicApiKeyCommand(request.ApiKey), ct);
-        return success ? Ok() : BadRequest(new { message = error });
-    }
-
-    [HttpDelete("anthropic-api-key")]
-    public async Task<IActionResult> RemoveAnthropicApiKey(CancellationToken ct)
-    {
-        var success = await _mediator.Send(new RemoveAnthropicApiKeyCommand(), ct);
         return success ? Ok() : NotFound();
     }
 }

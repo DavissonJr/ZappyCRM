@@ -56,7 +56,7 @@ public class InviteTeamMemberHandler : IRequestHandler<InviteTeamMemberCommand, 
         if (emailTaken) return (false, "Esse e-mail já está em uso.");
 
         var tenant = await _db.Tenants.FirstOrDefaultAsync(t => t.Id == tenantId, ct);
-        var planLimit = Domain.Common.PlanCatalog.Get(tenant?.Plan ?? Domain.Enums.PlanTier.Trial).MaxUsers;
+        var planLimit = Domain.Common.PlanCatalog.Get(tenant?.Plan ?? Domain.Enums.PlanTier.Starter).MaxUsers;
         if (planLimit != Domain.Common.PlanCatalog.UnlimitedMarker)
         {
             var currentCount = await _db.Users.IgnoreQueryFilters().CountAsync(u => u.TenantId == tenantId, ct);

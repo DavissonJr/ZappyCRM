@@ -17,18 +17,18 @@ public class GenerateProposalDraftHandler : IRequestHandler<GenerateProposalDraf
 {
     private readonly IApplicationDbContext _db;
     private readonly IAiAgentService _aiAgent;
-    private readonly ISecretProtector _secretProtector;
+    private readonly IGlobalSecretsProvider _globalSecrets;
     private readonly ICurrentTenantService _currentTenant;
 
     public GenerateProposalDraftHandler(
         IApplicationDbContext db,
         IAiAgentService aiAgent,
-        ISecretProtector secretProtector,
+        IGlobalSecretsProvider globalSecrets,
         ICurrentTenantService currentTenant)
     {
         _db = db;
         _aiAgent = aiAgent;
-        _secretProtector = secretProtector;
+        _globalSecrets = globalSecrets;
         _currentTenant = currentTenant;
     }
 
@@ -40,9 +40,9 @@ public class GenerateProposalDraftHandler : IRequestHandler<GenerateProposalDraf
             .FirstOrDefaultAsync(c => c.Id == request.ConversationId, ct);
         if (conversation is null) return (null, "Conversa não encontrada.");
 
-        var agentConfig = await _db.AiAgentConfigs.FirstOrDefaultAsync(ct);
-        if (string.IsNullOrEmpty(agentConfig?.AnthropicApiKeyEncrypted))
-            return (null, "Configure a chave da Anthropic em Configurações > Agente de IA antes de gerar propostas.");
+        var apiKey = _globalSecrets.GetAnthropicApiKey();
+        if (string.IsNullOrEmpty(apiKey))
+            return (null, "A IA não está configurada no momento. Fale com o suporte.");
 
         var tenant = await _db.Tenants.FirstOrDefaultAsync(t => t.Id == _currentTenant.TenantId, ct);
         var businessContext = $"{tenant?.Name} (segmento: {tenant?.Segment})";
@@ -65,8 +65,6 @@ public class GenerateProposalDraftHandler : IRequestHandler<GenerateProposalDraf
         {
             history.Add(("user", "Com base em tudo o que conversamos até aqui, gere a proposta comercial."));
         }
-
-        var apiKey = _secretProtector.Decrypt(agentConfig.AnthropicApiKeyEncrypted);
 
         string draftText;
         try
