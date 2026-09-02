@@ -2,8 +2,16 @@ import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
 import { platformAdminGuard } from './core/guards/platform-admin.guard';
 import { campaignsLockedGuard } from './core/guards/campaigns-locked.guard';
+import { redirectIfAuthenticatedGuard } from './core/guards/redirect-if-authenticated.guard';
 
 export const routes: Routes = [
+  {
+    path: '',
+    pathMatch: 'full',
+    loadComponent: () =>
+      import('./features/landing/landing.component').then((m) => m.LandingComponent),
+    canActivate: [redirectIfAuthenticatedGuard],
+  },
   {
     path: 'login',
     loadComponent: () =>

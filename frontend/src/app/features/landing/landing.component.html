@@ -1,0 +1,113 @@
+<div class="landing">
+  <header class="topbar">
+    <div class="brand">Zappy<span>CRM</span></div>
+    <a class="topbar-cta" [href]="ctaLinkPrincipal" target="_blank" rel="noopener">Falar no WhatsApp</a>
+  </header>
+
+  <section class="hero">
+    <div class="hero-copy">
+      <h1>Seu WhatsApp para de deixar cliente esperando.</h1>
+      <p class="hero-sub">
+        Uma IA responde na hora, marca horário sozinha e avisa antes do compromisso —
+        enquanto você cuida do resto do negócio.
+      </p>
+      <a class="btn-whatsapp" [href]="ctaLinkPrincipal" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M12.001 2C6.478 2 2 6.477 2 12c0 1.876.52 3.63 1.42 5.13L2 22l4.995-1.31A9.958 9.958 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12.001 2Zm0 18.061a8.03 8.03 0 0 1-4.09-1.117l-.294-.174-3.03.795.81-2.955-.192-.303A8.02 8.02 0 0 1 3.94 12c0-4.45 3.61-8.061 8.061-8.061 4.45 0 8.06 3.61 8.06 8.061 0 4.45-3.61 8.061-8.06 8.061Z"/>
+        </svg>
+        Fazer meu orçamento agora
+      </a>
+      <p class="hero-trust">Resposta rápida direto comigo — sem formulário, sem espera.</p>
+    </div>
+
+    <div class="hero-phone" aria-hidden="true">
+      <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <div class="phone-header">
+          <div class="phone-avatar">R</div>
+          <div class="phone-header-text">
+            <strong>Recepção</strong>
+            <span>online</span>
+          </div>
+        </div>
+        <div class="phone-chat">
+          @for (msg of chatMessages; track $index) {
+            <div class="bubble" [class.them]="msg.from === 'them'" [class.us]="msg.from === 'us'">
+              {{ msg.text }}
+            </div>
+          }
+          <div class="typing-indicator">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="problem">
+    <p>
+      Todo cliente que manda mensagem e não recebe resposta rápida é um cliente que
+      procura o concorrente. A demora custa caro — e ninguém tem tempo de ficar
+      grudado no celular o dia inteiro.
+    </p>
+  </section>
+
+  <section class="features">
+    <h2>O que muda no seu dia a dia</h2>
+    <div class="features-list">
+      @for (f of features; track f.title; let i = $index) {
+        <div class="feature-row" [class.reverse]="i % 2 === 1">
+          <div class="feature-text">
+            <h3>{{ f.title }}</h3>
+            <p>{{ f.body }}</p>
+          </div>
+          <div class="feature-mark">{{ i + 1 }}</div>
+        </div>
+      }
+    </div>
+  </section>
+
+  <section class="how-it-works">
+    <h2>Como começar</h2>
+    <ol class="steps">
+      @for (s of steps; track s.title; let i = $index) {
+        <li>
+          <span class="step-number">{{ i + 1 }}</span>
+          <div>
+            <h3>{{ s.title }}</h3>
+            <p>{{ s.body }}</p>
+          </div>
+        </li>
+      }
+    </ol>
+  </section>
+
+  <section class="segments">
+    <h2>Feito pra negócio local de verdade</h2>
+    <div class="segment-tags">
+      <span>Clínicas</span>
+      <span>Oficinas mecânicas</span>
+      <span>Escritórios de advocacia</span>
+      <span>Imobiliárias</span>
+      <span>E outros negócios com agenda</span>
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <h2>Bora parar de perder cliente por demora?</h2>
+    <p>Me chama agora e eu te mostro como fica funcionando na sua empresa.</p>
+    <a class="btn-whatsapp light" [href]="ctaLinkFinal" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M12.001 2C6.478 2 2 6.477 2 12c0 1.876.52 3.63 1.42 5.13L2 22l4.995-1.31A9.958 9.958 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12.001 2Zm0 18.061a8.03 8.03 0 0 1-4.09-1.117l-.294-.174-3.03.795.81-2.955-.192-.303A8.02 8.02 0 0 1 3.94 12c0-4.45 3.61-8.061 8.061-8.061 4.45 0 8.06 3.61 8.06 8.061 0 4.45-3.61 8.061-8.06 8.061Z"/>
+      </svg>
+      Chamar no WhatsApp: (81) 99653-3458
+    </a>
+  </section>
+
+  <footer class="landing-footer">
+    <div class="brand">Zappy<span>CRM</span></div>
+    <a routerLink="/login">Já sou cliente, entrar</a>
+  </footer>
+</div>
