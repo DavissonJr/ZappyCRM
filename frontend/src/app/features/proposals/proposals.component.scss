@@ -31,11 +31,11 @@
   background: var(--bg-page);
   color: var(--text-secondary);
 
-  &[data-status='Draft'] { background: #dbeafe; color: #1e40af; }
-  &[data-status='SentToClient'] { background: var(--amber-100); color: #92400e; }
-  &[data-status='Accepted'] { background: var(--signal-100); color: var(--signal-600); }
-  &[data-status='Rejected'] { background: var(--rose-100); color: #9f1239; }
-  &[data-status='Expired'] { background: #e5e7eb; color: #374151; }
+  &[data-status='Draft'] { background: var(--blue-100); color: var(--blue-text); }
+  &[data-status='SentToClient'] { background: var(--amber-100); color: var(--amber-text); }
+  &[data-status='Accepted'] { background: var(--signal-100); color: var(--signal-text); }
+  &[data-status='Rejected'] { background: var(--rose-100); color: var(--rose-text); }
+  &[data-status='Expired'] { background: var(--bg-page); color: var(--text-secondary); }
 }
 
 .ai-badge {
@@ -46,8 +46,8 @@
   border-radius: 999px;
   font-size: 11px;
   font-weight: 700;
-  background: #ede9fe;
-  color: #5b21b6;
+  background: var(--purple-100);
+  color: var(--purple-text);
 }
 
 .proposal-title { font-size: 15px; }

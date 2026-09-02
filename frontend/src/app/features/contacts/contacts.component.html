@@ -69,8 +69,8 @@
           </div>
 
           <div class="contact-info">
-            <strong>{{ contact.name || contact.phoneNumber }}</strong>
-            <span class="phone">{{ contact.phoneNumber }}</span>
+            <strong>{{ contact.name || (contact.phoneNumber | phoneFormat) }}</strong>
+            <span class="phone">{{ contact.phoneNumber | phoneFormat }}</span>
             @if (contact.notes) {
               <span class="notes">{{ contact.notes }}</span>
             }
@@ -116,7 +116,7 @@
   <div class="modal-backdrop" (click)="closeEdit()">
     <div class="modal" (click)="$event.stopPropagation()">
       <h3>Editar contato</h3>
-      <p class="modal-subtitle">{{ contact.phoneNumber }}</p>
+      <p class="modal-subtitle">{{ contact.phoneNumber | phoneFormat }}</p>
 
       <div class="field">
         <label>Nome</label>

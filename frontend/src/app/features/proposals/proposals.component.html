@@ -20,7 +20,7 @@
         </div>
 
         <strong class="proposal-title">{{ p.title }}</strong>
-        <span class="proposal-contact">{{ p.contact.name || p.contact.phoneNumber }}</span>
+        <span class="proposal-contact">{{ p.contact.name || (p.contact.phoneNumber | phoneFormat) }}</span>
         <p class="proposal-description">{{ p.description }}</p>
 
         @if (p.value) {

@@ -221,10 +221,10 @@
   font-weight: 700;
   text-transform: uppercase;
 
-  &[data-status='Pending'] { background: var(--amber-100); color: #92400e; }
-  &[data-status='Running'] { background: #dbeafe; color: #1e40af; }
-  &[data-status='Completed'] { background: var(--signal-100); color: var(--signal-600); }
-  &[data-status='Cancelled'] { background: var(--rose-100); color: #9f1239; }
+  &[data-status='Pending'] { background: var(--amber-100); color: var(--amber-text); }
+  &[data-status='Running'] { background: var(--blue-100); color: var(--blue-text); }
+  &[data-status='Completed'] { background: var(--signal-100); color: var(--signal-text); }
+  &[data-status='Cancelled'] { background: var(--rose-100); color: var(--rose-text); }
 }
 
 .campaign-message {

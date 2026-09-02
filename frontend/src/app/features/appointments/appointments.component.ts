@@ -6,6 +6,7 @@ import { WhatsAppConnectionService } from '../../core/services/whatsapp-connecti
 import { ToastService } from '../../core/services/toast.service';
 import { Appointment } from '../../core/models/appointment.model';
 import { WhatsAppConnection } from '../../core/models/whatsapp-connection.model';
+import { PhoneFormatPipe } from '../../shared/pipes/phone-format.pipe';
 import { PhoneMaskDirective } from '../../shared/phone-mask.directive';
 
 const STATUS_LABELS: Record<string, string> = {
@@ -34,7 +35,7 @@ function formatMinutesLabel(minutes: number): string {
 @Component({
   selector: 'app-appointments',
   standalone: true,
-  imports: [CommonModule, FormsModule, PhoneMaskDirective],
+  imports: [CommonModule, FormsModule, PhoneMaskDirective, PhoneFormatPipe],
   templateUrl: './appointments.component.html',
   styleUrl: './appointments.component.scss',
 })

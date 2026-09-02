@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { AiAgentConfig, AiUsageSummary, Me, TeamMember, TenantSettings } from '../models/settings.model';
+import { AiAgentConfig, AiCreditsStatus, Me, TeamMember, TenantSettings } from '../models/settings.model';
 
 @Injectable({ providedIn: 'root' })
 export class SettingsService {
@@ -32,14 +32,8 @@ export class SettingsService {
   getAiAgentConfig(): Observable<AiAgentConfig> {
     return this.http.get<AiAgentConfig>(`${this.base}/api/ai-agent-config`);
   }
-  updateAiAgentConfig(payload: Omit<AiAgentConfig, 'hasAnthropicApiKey' | 'anthropicApiKeyPreview'>): Observable<void> {
+  updateAiAgentConfig(payload: AiAgentConfig): Observable<void> {
     return this.http.put<void>(`${this.base}/api/ai-agent-config`, payload);
-  }
-  setAnthropicApiKey(apiKey: string): Observable<void> {
-    return this.http.put<void>(`${this.base}/api/ai-agent-config/anthropic-api-key`, { apiKey });
-  }
-  removeAnthropicApiKey(): Observable<void> {
-    return this.http.delete<void>(`${this.base}/api/ai-agent-config/anthropic-api-key`);
   }
 
   // Equipe
@@ -53,8 +47,8 @@ export class SettingsService {
     return this.http.put<void>(`${this.base}/api/team/${id}/active`, { isActive });
   }
 
-  // Créditos de IA (só leitura — relatório de uso, sem controle de saldo)
-  getAiUsage(): Observable<AiUsageSummary> {
-    return this.http.get<AiUsageSummary>(`${this.base}/api/ai-usage`);
+  // Créditos de IA (só leitura — uso do mês contra o limite do plano)
+  getAiUsage(): Observable<AiCreditsStatus> {
+    return this.http.get<AiCreditsStatus>(`${this.base}/api/ai-usage`);
   }
 }

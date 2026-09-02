@@ -100,33 +100,6 @@
   @if (activeTab() === 'ia') {
     <div class="tab-content">
       <section class="settings-card">
-        <h2>Conta da Anthropic</h2>
-        <p class="section-subtitle">
-          Sua empresa usa a própria conta na Anthropic — o custo da IA sai do seu saldo lá,
-          não do nosso. Crie uma conta em
-          <a href="https://console.anthropic.com" target="_blank" rel="noopener">console.anthropic.com</a>,
-          gere uma chave de API e cole aqui.
-        </p>
-
-        @if (anthropicHasKey()) {
-          <div class="key-status connected">
-            <span class="dot"></span>
-            Chave configurada ({{ anthropicKeyPreview() }})
-          </div>
-          <div class="key-actions">
-            <button class="btn-ghost" (click)="openAnthropicKeyForm()">Trocar chave</button>
-            <button class="btn-ghost danger" (click)="removeAnthropicKey()">Remover</button>
-          </div>
-        } @else {
-          <div class="key-status missing">
-            <span class="dot"></span>
-            Nenhuma chave configurada — a IA não vai responder automaticamente até você cadastrar uma.
-          </div>
-          <button class="btn-primary" (click)="openAnthropicKeyForm()">+ Cadastrar chave</button>
-        }
-      </section>
-
-      <section class="settings-card">
         <h2>Assistente virtual</h2>
         <p class="section-subtitle">Como a IA se apresenta e se comporta ao responder seus clientes.</p>
 
@@ -183,62 +156,25 @@
   @if (activeTab() === 'creditos') {
     <div class="tab-content">
       <section class="settings-card">
-        <h2>Saldo e cobrança</h2>
+        <h2>Créditos de IA deste mês</h2>
         <p class="section-subtitle">
-          O saldo de créditos da IA fica na sua própria conta da Anthropic — a gente não
-          controla nem guarda esse dinheiro. Pra ver o saldo real, adicionar cartão ou
-          recarregar, acessa direto o console da Anthropic.
-        </p>
-        <a class="btn-primary link-btn" href="https://console.anthropic.com/settings/billing" target="_blank" rel="noopener">
-          Abrir console da Anthropic ↗
-        </a>
-      </section>
-
-      <section class="settings-card">
-        <h2>Uso registrado neste app</h2>
-        <p class="section-subtitle">
-          Isso é só um relatório do que a IA consumiu através das suas conversas aqui —
-          não é um saldo, é a soma dos tokens que cada resposta realmente usou.
+          Cada resposta que a IA gera automaticamente consome 1 crédito. O limite mensal
+          depende do seu plano ({{ aiUsage()?.planName }}) e da quantidade de usuários da
+          sua equipe. Precisa de mais? Fale com o suporte pra ajustar seu plano.
         </p>
 
         @if (aiUsage(); as usage) {
-          <div class="usage-stats">
-            <div class="usage-stat">
-              <span class="stat-value">{{ usage.totalInputTokens + usage.totalOutputTokens | number }}</span>
-              <span class="stat-label">tokens usados</span>
+          <div class="credits-progress">
+            <div class="credits-bar">
+              <div
+                class="credits-bar-fill"
+                [class.warning]="usage.creditsUsedThisMonth / usage.creditsBudgetThisMonth > 0.8"
+                [style.width.%]="(usage.creditsUsedThisMonth / usage.creditsBudgetThisMonth) * 100"></div>
             </div>
-            <div class="usage-stat">
-              <span class="stat-value">{{ usage.estimatedTotalCostUsd | currency: 'USD' : 'symbol' : '1.2-4' }}</span>
-              <span class="stat-label">custo estimado</span>
+            <div class="credits-numbers">
+              <strong>{{ usage.creditsUsedThisMonth }}</strong> de {{ usage.creditsBudgetThisMonth }} créditos usados
             </div>
           </div>
-        }
-      </section>
-
-      <section class="settings-card">
-        <h2>Histórico de uso</h2>
-
-        @if (aiUsage(); as usage) {
-          <table class="team-table">
-            <thead>
-              <tr>
-                <th>Data</th>
-                <th>Tokens (entrada / saída)</th>
-                <th>Custo estimado</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (log of usage.recentUsage; track log.createdAtUtc) {
-                <tr>
-                  <td>{{ log.createdAtUtc | date: 'dd/MM/yyyy HH:mm' }}</td>
-                  <td>{{ log.inputTokens }} / {{ log.outputTokens }}</td>
-                  <td>{{ log.costUsd | currency: 'USD' : 'symbol' : '1.4-4' }}</td>
-                </tr>
-              } @empty {
-                <tr><td colspan="3">Nenhum uso registrado ainda.</td></tr>
-              }
-            </tbody>
-          </table>
         }
       </section>
     </div>
@@ -320,33 +256,6 @@
         <button class="btn-ghost" (click)="closeInviteForm()">Cancelar</button>
         <button class="btn-primary" (click)="inviteMember()" [disabled]="inviting()">
           {{ inviting() ? 'Adicionando...' : 'Adicionar' }}
-        </button>
-      </div>
-    </div>
-  </div>
-}
-
-@if (showAnthropicKeyForm()) {
-  <div class="modal-backdrop" (click)="cancelAnthropicKeyForm()">
-    <div class="modal" (click)="$event.stopPropagation()">
-      <h3>{{ anthropicHasKey() ? 'Trocar' : 'Cadastrar' }} chave da Anthropic</h3>
-      <p class="modal-subtitle">
-        A chave fica criptografada. Depois de salva, não é possível ver ela de novo — só trocar.
-      </p>
-
-      @if (anthropicKeyMessage(); as msg) {
-        <div class="message-banner" [class.error]="msg.type === 'error'">{{ msg.text }}</div>
-      }
-
-      <div class="field">
-        <label>Chave de API</label>
-        <input type="text" [(ngModel)]="anthropicKeyInput" placeholder="sk-ant-..." autocomplete="off" />
-      </div>
-
-      <div class="modal-actions">
-        <button class="btn-ghost" (click)="cancelAnthropicKeyForm()">Cancelar</button>
-        <button class="btn-primary" (click)="saveAnthropicKey()" [disabled]="savingAnthropicKey()">
-          {{ savingAnthropicKey() ? 'Salvando...' : 'Salvar chave' }}
         </button>
       </div>
     </div>

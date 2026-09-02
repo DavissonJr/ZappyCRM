@@ -16,9 +16,9 @@ comerciais, e dá visibilidade de tudo isso num dashboard.
 - **WhatsApp**: [Evolution API](https://doc.evolution-api.com) (self-hosted, não-oficial —
   Baileys). Trocar para WhatsApp Cloud API no futuro exige só uma nova implementação de
   `IWhatsAppGateway`, sem tocar no domínio.
-- **IA**: Claude (Anthropic) — **cada tenant usa a própria chave de API**, configurada
-  pelo próprio cliente em Configurações → Agente de IA. O custo da IA nunca sai da sua
-  conta, sai da conta de cada empresa cliente.
+- **IA**: Claude (Anthropic) — **chave global, sua** (do `.env`), embutida na mensalidade
+  de cada plano. Cada empresa cliente tem um limite de créditos de IA por usuário/mês
+  (1 crédito = 1 resposta gerada pela IA), definido pelo plano dela.
 - **Infra**: Docker Compose (Postgres, Redis, Evolution API, API, Frontend)
 
 ## O que já está implementado
@@ -116,9 +116,11 @@ C:\Users\<voce>\AppData\Local\Programs\DockerDesktop\resources\bin
 cp .env.example .env
 ```
 
-A chave da Anthropic **não é mais global** — cada empresa tem a própria chave,
-cadastrada pela tela de Configurações depois que você cria a conta dela. O que
-precisa mesmo estar no `.env` é o **SMTP**, usado pra e-mails transacionais.
+A chave da Anthropic é **global, sua** — cadastra ela no `.env` (`ANTHROPIC_API_KEY`)
+e pronto, todas as empresas usam a mesma, com o custo embutido na mensalidade que
+cada uma paga. Cada empresa tem um limite mensal de créditos de IA (definido pelo
+plano dela), pra manter o consumo previsível. O outro que precisa mesmo estar no
+`.env` é o **SMTP**, usado pra e-mails transacionais.
 
 #### Configurando o SMTP
 
@@ -219,12 +221,13 @@ temporária **uma vez só** (anota ela) — repassa e-mail/senha pro cliente.
 Desloga e loga como o dono da empresa que você acabou de criar (ou abre uma aba
 anônima). Tela **Números WhatsApp** → "Conectar número" → escaneia o QR code. O
 webhook é configurado automaticamente, não precisa fazer nada manual na Evolution API.
+A IA já está pronta pra responder — não precisa configurar chave nenhuma.
 
-### 9. Configurar a IA
+### 9. Ajustar o comportamento da IA (opcional)
 
-Tela **Configurações → Agente de IA** → cadastra a chave da Anthropic dessa
-empresa (pega em https://console.anthropic.com) → ajusta o `system prompt`,
-horário de atendimento, e se quer aprovação humana antes de enviar.
+Tela **Configurações → Agente de IA** → ajusta o `system prompt` (como a IA se
+apresenta), horário de atendimento, e se quer aprovação humana antes de enviar
+cada resposta. Tudo já vem com um padrão razoável, então esse passo é opcional.
 
 ## Serviços e URLs
 

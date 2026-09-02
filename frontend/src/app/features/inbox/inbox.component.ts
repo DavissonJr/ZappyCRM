@@ -6,6 +6,7 @@ import { Subscription, interval } from 'rxjs';
 import { ConversationService } from '../../core/services/conversation.service';
 import { WhatsAppConnectionService } from '../../core/services/whatsapp-connection.service';
 import { MessageTemplateService } from '../../core/services/message-template.service';
+import { PhoneFormatPipe } from '../../shared/pipes/phone-format.pipe';
 import { ToastService } from '../../core/services/toast.service';
 import { RealtimeService } from '../../core/services/realtime.service';
 import { Conversation, ConversationSummary } from '../../core/models/conversation.model';
@@ -22,7 +23,7 @@ const POLL_FALLBACK_INTERVAL_MS = 15000;
 @Component({
   selector: 'app-inbox',
   standalone: true,
-  imports: [CommonModule, FormsModule, PhoneMaskDirective, OnboardingChecklistComponent],
+  imports: [CommonModule, FormsModule, PhoneMaskDirective, OnboardingChecklistComponent, PhoneFormatPipe],
   templateUrl: './inbox.component.html',
   styleUrl: './inbox.component.scss',
 })

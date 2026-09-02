@@ -42,7 +42,7 @@ export class AdminComponent implements OnInit {
   creating = signal(false);
   newCompanyName = signal('');
   newSegment = signal('clinica');
-  newPlan = signal('Trial');
+  newPlan = signal('Starter');
   newOwnerFullName = signal('');
   newOwnerEmail = signal('');
   newTemporaryPassword = signal(generatePassword());
@@ -109,7 +109,7 @@ export class AdminComponent implements OnInit {
   openCreateForm(): void {
     this.newCompanyName.set('');
     this.newSegment.set('clinica');
-    this.newPlan.set('Trial');
+    this.newPlan.set('Starter');
     this.newOwnerFullName.set('');
     this.newOwnerEmail.set('');
     this.newTemporaryPassword.set(generatePassword());

@@ -23,9 +23,19 @@
 
   --amber-500: #f59e0b;    /* aguardando humano / atenção */
   --amber-100: #fef3c7;
+  --amber-text: #92400e;
 
   --rose-500: #f43f5e;     /* erro, desconectado */
   --rose-100: #ffe4e6;
+  --rose-text: #9f1239;
+
+  --blue-100: #dbeafe;     /* status neutro/informativo (ex: "agendado", "rascunho") */
+  --blue-text: #1e40af;
+
+  --purple-100: #ede9fe;
+  --purple-text: #5b21b6;
+
+  --signal-text: #059669;  /* texto sobre fundo --signal-100 */
 
   /* Tipografia */
   --font-display: 'Manrope', system-ui, sans-serif;
@@ -61,6 +71,15 @@
   --signal-100: #0f2e26;
   --amber-100: #3a2a0f;
   --rose-100: #3a1620;
+  --blue-100: #1e2f4d;
+
+  --purple-100: #2e2249;
+  --purple-text: #c4b5fd;
+
+  --amber-text: #fbbf24;
+  --rose-text: #fda4af;
+  --blue-text: #93c5fd;
+  --signal-text: #34d399;
 }
 
 * { box-sizing: border-box; }
@@ -95,6 +114,52 @@ a { color: inherit; }
 :focus-visible {
   outline: 2px solid var(--signal-500);
   outline-offset: 2px;
+}
+
+/* ============================================================
+   Animações globais — deixam a navegação mais fluida sem
+   precisar repetir isso em cada tela.
+   ============================================================ */
+
+@keyframes fade-slide-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in-simple {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modal-pop-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Toda tela que usa a classe .page (a maioria) entra com um fade+slide sutil. */
+.page {
+  animation: fade-slide-in 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Qualquer modal do app (todos seguem o padrão .modal-backdrop > .modal,
+   com algumas variações de nome pontuais) ganha uma entrada suave
+   automaticamente, sem precisar declarar em cada tela. */
+.modal-backdrop, .qr-modal-backdrop {
+  animation: fade-in-simple 0.15s ease both;
+}
+
+.modal, .qr-modal, .confirm-modal {
+  animation: modal-pop-in 0.22s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Transições suaves em botões e links de ação do app inteiro. */
+button, .btn-primary, .btn-secondary, .btn-ghost, a.btn-primary {
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease,
+              transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+}
+
+button:not(:disabled):active, .btn-primary:not(:disabled):active {
+  transform: scale(0.98);
 }
 
 @media (prefers-reduced-motion: reduce) {

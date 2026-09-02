@@ -135,7 +135,7 @@
 
   .error-banner {
     background: var(--rose-100);
-    color: #9f1239;
+    color: var(--rose-text);
     padding: 10px 14px;
     border-radius: var(--radius-sm);
     font-size: 13px;
@@ -193,6 +193,41 @@
       text-decoration: none;
       cursor: pointer;
     }
+  }
+
+  .or-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 22px 0;
+    color: var(--ink-400);
+    font-size: 12px;
+
+    &::before, &::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--ink-100, #e2e8f0);
+    }
+  }
+
+  .btn-whatsapp-outline {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 12px;
+    border-radius: var(--radius-md);
+    border: 1.5px solid #1fa855;
+    color: #1fa855;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 700;
+    transition: background 0.15s ease, color 0.15s ease;
+    box-sizing: border-box;
+
+    &:hover { background: #1fa855; color: white; }
   }
 
   .form-row {

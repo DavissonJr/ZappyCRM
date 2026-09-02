@@ -86,11 +86,11 @@
   color: var(--text-secondary);
   flex-shrink: 0;
 
-  &[data-status='Scheduled'] { background: #dbeafe; color: #1e40af; }
-  &[data-status='Confirmed'] { background: var(--signal-100); color: var(--signal-600); }
-  &[data-status='Cancelled'] { background: var(--rose-100); color: #9f1239; }
-  &[data-status='Completed'] { background: #e5e7eb; color: #374151; }
-  &[data-status='NoShow'] { background: var(--amber-100); color: #92400e; }
+  &[data-status='Scheduled'] { background: var(--blue-100); color: var(--blue-text); }
+  &[data-status='Confirmed'] { background: var(--signal-100); color: var(--signal-text); }
+  &[data-status='Cancelled'] { background: var(--rose-100); color: var(--rose-text); }
+  &[data-status='Completed'] { background: var(--bg-page); color: var(--text-secondary); }
+  &[data-status='NoShow'] { background: var(--amber-100); color: var(--amber-text); }
 }
 
 .appt-reminders {
@@ -110,8 +110,8 @@
   background: var(--bg-page);
   color: var(--text-secondary);
 
-  &[data-status='Sent'] { background: var(--signal-100); color: var(--signal-600); }
-  &[data-status='Failed'] { background: var(--rose-100); color: #9f1239; }
+  &[data-status='Sent'] { background: var(--signal-100); color: var(--signal-text); }
+  &[data-status='Failed'] { background: var(--rose-100); color: var(--rose-text); }
 }
 
 .appt-actions {

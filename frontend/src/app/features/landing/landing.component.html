@@ -1,7 +1,10 @@
 <div class="landing">
   <header class="topbar">
     <div class="brand">Zappy<span>CRM</span></div>
-    <a class="topbar-cta" [href]="ctaLinkPrincipal" target="_blank" rel="noopener">Falar no WhatsApp</a>
+    <div class="topbar-actions">
+      <a class="topbar-login" routerLink="/login">Já é cliente? Entrar</a>
+      <a class="topbar-cta" [href]="ctaLinkPrincipal" target="_blank" rel="noopener">Falar no WhatsApp</a>
+    </div>
   </header>
 
   <section class="hero">
@@ -81,6 +84,29 @@
         </li>
       }
     </ol>
+  </section>
+
+  <section class="plans" id="planos">
+    <h2>Planos</h2>
+    <p class="plans-sub">Sem taxa de setup escondida. O valor da IA já vem embutido na mensalidade.</p>
+
+    <div class="plans-grid">
+      @for (plan of plans; track plan.name) {
+        <div class="plan-card" [class.highlight]="plan.highlight">
+          @if (plan.highlight) {
+            <span class="plan-badge">Mais escolhido</span>
+          }
+          <h3>{{ plan.name }}</h3>
+          <div class="plan-price">R$ {{ plan.price }}<span>/mês</span></div>
+          <ul class="plan-features">
+            @for (f of plan.features; track f) {
+              <li>{{ f }}</li>
+            }
+          </ul>
+          <a class="plan-cta" [href]="planLink(plan.name)" target="_blank" rel="noopener">Quero esse plano</a>
+        </div>
+      }
+    </div>
   </section>
 
   <section class="segments">

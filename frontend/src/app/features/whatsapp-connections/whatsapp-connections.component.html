@@ -22,7 +22,7 @@
       <div class="connection-card">
         <div class="connection-info">
           <div class="connection-label">{{ conn.label }}</div>
-          <div class="connection-phone">{{ conn.phoneNumber || 'Ainda não conectado' }}</div>
+          <div class="connection-phone">{{ (conn.phoneNumber | phoneFormat) || 'Ainda não conectado' }}</div>
         </div>
 
         <div class="connection-status" [class.connected]="conn.isConnected">

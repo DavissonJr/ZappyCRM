@@ -19,6 +19,10 @@ export class LandingComponent {
   ctaLinkPrincipal = waLink('Olá! Vi o Zappy CRM e quero fazer um orçamento para minha empresa.');
   ctaLinkFinal = waLink('Olá! Quero começar a usar o Zappy CRM na minha empresa. Pode me passar mais detalhes?');
 
+  planLink(planName: string): string {
+    return waLink(`Olá! Tenho interesse no plano ${planName} do Zappy CRM. Pode me passar mais detalhes?`);
+  }
+
   features = [
     {
       title: 'Responde sozinho, na hora',
@@ -58,5 +62,26 @@ export class LandingComponent {
     { from: 'us', text: 'Bom dia! Temos sim 😊 Às 9h ou às 10h30 — qual fica melhor pra você?' },
     { from: 'them', text: 'Pode ser 9h' },
     { from: 'us', text: 'Prontinho! Agendado pra amanhã às 9h. Te aviso 1h antes ✅' },
+  ];
+
+  plans = [
+    {
+      name: 'Basic',
+      price: '149',
+      highlight: false,
+      features: ['1 número de WhatsApp', 'Até 2 usuários', '300 créditos de IA por usuário/mês', 'IA que responde e agenda sozinha', 'Dashboard e relatórios'],
+    },
+    {
+      name: 'Pro',
+      price: '289',
+      highlight: true,
+      features: ['Até 3 números de WhatsApp', 'Até 6 usuários', '600 créditos de IA por usuário/mês', 'Tudo do Basic', 'Propostas comerciais geradas por IA'],
+    },
+    {
+      name: 'Business',
+      price: '549',
+      highlight: false,
+      features: ['Números ilimitados', 'Usuários ilimitados', '1000 créditos de IA por usuário/mês', 'Tudo do Pro', 'Suporte prioritário'],
+    },
   ];
 }

@@ -46,11 +46,11 @@
   text-transform: uppercase;
   letter-spacing: 0.03em;
   background: var(--signal-100);
-  color: var(--signal-600);
+  color: var(--signal-text);
 
-  &[data-scope='Cobranca'] { background: var(--amber-100); color: #92400e; }
-  &[data-scope='Lembrete'] { background: #dbeafe; color: #1e40af; }
-  &[data-scope='Agendamento'] { background: #ede9fe; color: #5b21b6; }
+  &[data-scope='Cobranca'] { background: var(--amber-100); color: var(--amber-text); }
+  &[data-scope='Lembrete'] { background: var(--blue-100); color: var(--blue-text); }
+  &[data-scope='Agendamento'] { background: var(--purple-100); color: var(--purple-text); }
 }
 
 .inactive-badge {
@@ -59,7 +59,7 @@
   font-size: 11px;
   font-weight: 700;
   background: var(--rose-100);
-  color: #9f1239;
+  color: var(--rose-text);
 }
 
 .template-name {

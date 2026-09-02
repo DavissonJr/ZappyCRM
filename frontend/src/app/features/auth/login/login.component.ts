@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 
+const WHATSAPP_NUMBER = '5581996533458';
+
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -19,6 +21,10 @@ export class LoginComponent {
   password = signal('');
   loading = signal(false);
   errorMessage = signal<string | null>(null);
+
+  orcamentoLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
+    'Olá! Ainda não sou cliente do Zappy CRM e quero fazer um orçamento para minha empresa.',
+  )}`;
 
   submit(): void {
     if (!this.email() || !this.password()) return;

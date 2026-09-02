@@ -2,6 +2,12 @@
   display: flex;
   flex-direction: column;
   height: 100%;
+  animation: fade-slide-in 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes message-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .inbox {
@@ -146,7 +152,7 @@
       align-items: center;
       gap: 4px;
       background: var(--amber-100);
-      color: #92400e;
+      color: var(--amber-text);
       font-weight: 600;
     }
   }
@@ -239,6 +245,7 @@
     border-radius: 12px;
     align-self: flex-start;
     box-shadow: var(--shadow-card);
+    animation: message-in 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
 
     &.outbound {
       align-self: flex-end;
@@ -343,7 +350,7 @@
 
 .error-banner {
   background: var(--rose-100);
-  color: #9f1239;
+  color: var(--rose-text);
   padding: 10px 16px;
   font-size: 13px;
   border-top: 1px solid var(--border-color);
@@ -379,7 +386,7 @@
 
   .error-banner {
     background: var(--rose-100);
-    color: #9f1239;
+    color: var(--rose-text);
     padding: 10px 14px;
     border-radius: 6px;
     font-size: 13px;
@@ -487,7 +494,7 @@
   gap: 6px;
   font-size: 12px;
   font-weight: 600;
-  color: #92400e;
+  color: var(--amber-text);
   margin-bottom: 8px;
 }
 

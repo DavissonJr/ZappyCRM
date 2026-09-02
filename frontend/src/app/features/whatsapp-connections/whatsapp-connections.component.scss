@@ -79,7 +79,7 @@
 
 .error-banner {
   background: var(--rose-100);
-  color: #9f1239;
+  color: var(--rose-text);
   padding: 12px 16px;
   border-radius: var(--radius-md);
   font-size: 13px;
@@ -122,7 +122,7 @@
 
 .qr-error {
   padding: 24px 0;
-  color: #9f1239;
+  color: var(--rose-text);
   background: var(--rose-100);
   border-radius: var(--radius-md);
   font-size: 13px;

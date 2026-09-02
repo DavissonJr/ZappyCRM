@@ -20,7 +20,7 @@
             }
           </div>
           <div class="li-content">
-            <strong>{{ conv.contact.name || conv.contact.phoneNumber }}</strong>
+            <strong>{{ conv.contact.name || (conv.contact.phoneNumber | phoneFormat) }}</strong>
             <span class="preview">{{ conv.lastMessagePreview }}</span>
             @if (conv.pendingAiSuggestion) {
               <span class="status ai-pending">
@@ -52,9 +52,9 @@
           }
         </div>
         <div class="header-info">
-          <h3>{{ conv.contact.name || conv.contact.phoneNumber }}</h3>
+          <h3>{{ conv.contact.name || (conv.contact.phoneNumber | phoneFormat) }}</h3>
           @if (conv.contact.name) {
-            <span class="header-phone">{{ conv.contact.phoneNumber }}</span>
+            <span class="header-phone">{{ conv.contact.phoneNumber | phoneFormat }}</span>
           }
         </div>
         <button class="icon-btn gen-proposal-btn" (click)="generateProposal()" [disabled]="generatingProposal()" title="Gerar proposta com IA">

@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ProposalService } from '../../core/services/proposal.service';
 import { ToastService } from '../../core/services/toast.service';
 import { Proposal } from '../../core/models/proposal.model';
+import { PhoneFormatPipe } from '../../shared/pipes/phone-format.pipe';
 
 const STATUS_LABELS: Record<string, string> = {
   Draft: 'Rascunho',
@@ -16,7 +17,7 @@ const STATUS_LABELS: Record<string, string> = {
 @Component({
   selector: 'app-proposals',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, PhoneFormatPipe],
   templateUrl: './proposals.component.html',
   styleUrl: './proposals.component.scss',
 })

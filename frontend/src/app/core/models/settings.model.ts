@@ -19,22 +19,13 @@ export interface AiAgentConfig {
   requireHumanApproval: boolean;
   businessHours: string;
   fallbackMessage?: string;
-  hasAnthropicApiKey: boolean;
-  anthropicApiKeyPreview?: string;
 }
 
-export interface AiUsageLog {
-  createdAtUtc: string;
-  inputTokens: number;
-  outputTokens: number;
-  costUsd: number;
-}
-
-export interface AiUsageSummary {
-  totalInputTokens: number;
-  totalOutputTokens: number;
-  estimatedTotalCostUsd: number;
-  recentUsage: AiUsageLog[];
+export interface AiCreditsStatus {
+  planName: string;
+  creditsUsedThisMonth: number;
+  creditsBudgetThisMonth: number;
+  monthStartUtc: string;
 }
 
 export interface TeamMember {

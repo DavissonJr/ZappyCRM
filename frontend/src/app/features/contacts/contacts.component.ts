@@ -5,13 +5,14 @@ import { Router } from '@angular/router';
 import { ContactService } from '../../core/services/contact.service';
 import { ToastService } from '../../core/services/toast.service';
 import { ContactListItem } from '../../core/models/contact.model';
+import { PhoneFormatPipe } from '../../shared/pipes/phone-format.pipe';
 
 type StatusFilter = 'all' | 'active' | 'blocked';
 
 @Component({
   selector: 'app-contacts',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, PhoneFormatPipe],
   templateUrl: './contacts.component.html',
   styleUrl: './contacts.component.scss',
 })

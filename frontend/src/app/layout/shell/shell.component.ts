@@ -4,7 +4,6 @@ import { NavigationStart, Router, RouterLink, RouterLinkActive, RouterOutlet } f
 import { AuthService } from '../../core/services/auth.service';
 import { RealtimeService } from '../../core/services/realtime.service';
 import { ThemeService } from '../../core/services/theme.service';
-import { ToastService } from '../../core/services/toast.service';
 
 @Component({
   selector: 'app-shell',
@@ -18,7 +17,6 @@ export class ShellComponent implements OnInit, OnDestroy {
   theme = inject(ThemeService);
   private realtime = inject(RealtimeService);
   private router = inject(Router);
-  private toast = inject(ToastService);
 
   mobileMenuOpen = signal(false);
 
@@ -26,13 +24,6 @@ export class ShellComponent implements OnInit, OnDestroy {
     { path: '/dashboard', label: 'Dashboard', icon: 'M3 3h6v8H3V3Zm8 0h6v5h-6V3ZM3 13h6v4H3v-4Zm8-3h6v7h-6v-7Z' },
     { path: '/inbox', label: 'Conversas', icon: 'M2 5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H8l-4 3v-3H4a2 2 0 0 1-2-2V5Z' },
     { path: '/contatos', label: 'Contatos', icon: 'M10 2a4 4 0 1 0 0 8 4 4 0 0 0 0-8ZM3 17a7 7 0 0 1 14 0 1 1 0 0 1-1 1H4a1 1 0 0 1-1-1Z' },
-    {
-      path: '/campanhas',
-      label: 'Campanhas',
-      icon: 'M3 4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4Zm8 8a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1v-4ZM3 13.5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1V16a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-2.5ZM11.5 3a1 1 0 0 1 1-1H16a1 1 0 0 1 1 1v3.5a1 1 0 0 1-1 1h-3.5a1 1 0 0 1-1-1V3Z',
-      locked: true,
-      lockedReason: 'Disponível quando integrarmos a API oficial do WhatsApp (Meta) — via Evolution API o risco de bloqueio do número é alto demais pra disparo em massa.',
-    },
     { path: '/agendamentos', label: 'Agendamentos', icon: 'M5 2a1 1 0 0 1 1 1v1h8V3a1 1 0 1 1 2 0v1h1a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1V3a1 1 0 0 1 1-1Zm11 6H4v8h12V8Z' },
     { path: '/propostas', label: 'Propostas', icon: 'M4 2h9l3 3v13a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1Zm8 1v3h3l-3-3ZM6 9h8v1.5H6V9Zm0 3h8v1.5H6V12Zm0 3h5v1.5H6V15Z' },
     { path: '/numeros', label: 'Números WhatsApp', icon: 'M4 3h8l4 4v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm7 6H8v2h3v2H8v2h5v-2h-2V9h2V7h-5v2Z' },
@@ -53,10 +44,6 @@ export class ShellComponent implements OnInit, OnDestroy {
 
   toggleMobileMenu(): void {
     this.mobileMenuOpen.update((v) => !v);
-  }
-
-  showLockedMessage(reason?: string): void {
-    this.toast.info(reason ?? 'Esse recurso ainda não está disponível.');
   }
 
   logout(): void {

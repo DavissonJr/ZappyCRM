@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { WhatsAppConnectionService } from '../../core/services/whatsapp-connection.service';
 import { ToastService } from '../../core/services/toast.service';
 import { WhatsAppConnection } from '../../core/models/whatsapp-connection.model';
+import { PhoneFormatPipe } from '../../shared/pipes/phone-format.pipe';
 
 @Component({
   selector: 'app-whatsapp-connections',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, PhoneFormatPipe],
   templateUrl: './whatsapp-connections.component.html',
   styleUrl: './whatsapp-connections.component.scss',
 })

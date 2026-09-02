@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { SettingsService } from '../../core/services/settings.service';
-import { AiAgentConfig, AiUsageSummary, Me, TeamMember, TenantSettings } from '../../core/models/settings.model';
+import { AiAgentConfig, AiCreditsStatus, Me, TeamMember, TenantSettings } from '../../core/models/settings.model';
 
 type SettingsTab = 'perfil' | 'empresa' | 'ia' | 'creditos' | 'equipe';
 
@@ -57,14 +57,6 @@ export class SettingsComponent implements OnInit {
   savingAi = signal(false);
   aiMessage = signal<{ type: 'success' | 'error'; text: string } | null>(null);
 
-  // Chave da Anthropic (por tenant)
-  anthropicHasKey = signal(false);
-  anthropicKeyPreview = signal<string | undefined>(undefined);
-  anthropicKeyInput = signal('');
-  showAnthropicKeyForm = signal(false);
-  savingAnthropicKey = signal(false);
-  anthropicKeyMessage = signal<{ type: 'success' | 'error'; text: string } | null>(null);
-
   // Equipe
   team = signal<TeamMember[]>([]);
   showInviteForm = signal(false);
@@ -75,7 +67,7 @@ export class SettingsComponent implements OnInit {
   teamMessage = signal<{ type: 'success' | 'error'; text: string } | null>(null);
 
   // Créditos de IA (só leitura)
-  aiUsage = signal<AiUsageSummary | null>(null);
+  aiUsage = signal<AiCreditsStatus | null>(null);
 
   ngOnInit(): void {
     this.loadProfile();
@@ -177,8 +169,6 @@ export class SettingsComponent implements OnInit {
       this.aiRequireApproval.set(config.requireHumanApproval);
       this.aiBusinessHours.set(config.businessHours);
       this.aiFallbackMessage.set(config.fallbackMessage ?? '');
-      this.anthropicHasKey.set(config.hasAnthropicApiKey);
-      this.anthropicKeyPreview.set(config.anthropicApiKeyPreview);
     });
   }
 
@@ -255,52 +245,6 @@ export class SettingsComponent implements OnInit {
     this.service.setTeamMemberActive(member.id, !member.isActive).subscribe({
       next: () => this.loadTeam(),
       error: () => this.teamMessage.set({ type: 'error', text: 'Não foi possível atualizar esse membro.' }),
-    });
-  }
-
-  // ---- Chave da Anthropic ----
-  openAnthropicKeyForm(): void {
-    this.anthropicKeyInput.set('');
-    this.anthropicKeyMessage.set(null);
-    this.showAnthropicKeyForm.set(true);
-  }
-
-  cancelAnthropicKeyForm(): void {
-    this.showAnthropicKeyForm.set(false);
-  }
-
-  saveAnthropicKey(): void {
-    const key = this.anthropicKeyInput().trim();
-    if (key.length < 10) {
-      this.anthropicKeyMessage.set({ type: 'error', text: 'Cole uma chave válida (começa com "sk-ant-").' });
-      return;
-    }
-
-    this.savingAnthropicKey.set(true);
-    this.anthropicKeyMessage.set(null);
-    this.service.setAnthropicApiKey(key).subscribe({
-      next: () => {
-        this.savingAnthropicKey.set(false);
-        this.showAnthropicKeyForm.set(false);
-        this.aiMessage.set({ type: 'success', text: 'Chave da Anthropic salva com sucesso.' });
-        this.loadAiConfig();
-      },
-      error: (err) => {
-        this.savingAnthropicKey.set(false);
-        this.anthropicKeyMessage.set({ type: 'error', text: err?.error?.message ?? 'Não foi possível salvar a chave.' });
-      },
-    });
-  }
-
-  removeAnthropicKey(): void {
-    if (!confirm('Remover a chave da Anthropic? A IA para de responder automaticamente até você cadastrar uma nova.')) return;
-
-    this.service.removeAnthropicApiKey().subscribe({
-      next: () => {
-        this.aiMessage.set({ type: 'success', text: 'Chave removida.' });
-        this.loadAiConfig();
-      },
-      error: () => this.aiMessage.set({ type: 'error', text: 'Não foi possível remover a chave.' }),
     });
   }
 

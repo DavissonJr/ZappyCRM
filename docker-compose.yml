@@ -67,8 +67,6 @@ services:
         condition: service_healthy
       evolution-api:
         condition: service_started
-    volumes:
-      - dataprotection_keys:/keys
 
   frontend:
     build:
@@ -82,4 +80,3 @@ services:
 volumes:
   postgres_data:
   evolution_instances:
-  dataprotection_keys:

@@ -35,6 +35,20 @@
     flex-direction: column;
     gap: 4px;
     flex: 1;
+
+    .nav-item {
+      animation: nav-item-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    // Escalona a entrada de cada item — dá aquele efeito "cascata" suave.
+    @for $i from 1 through 12 {
+      .nav-item:nth-child(#{$i}) { animation-delay: #{$i * 0.03}s; }
+    }
+  }
+
+  @keyframes nav-item-in {
+    from { opacity: 0; transform: translateX(-6px); }
+    to { opacity: 1; transform: translateX(0); }
   }
 
   .nav-item {
@@ -47,9 +61,9 @@
     text-decoration: none;
     font-size: 14px;
     font-weight: 500;
-    transition: background 0.15s ease, color 0.15s ease;
+    transition: background 0.18s cubic-bezier(0.16, 1, 0.3, 1), color 0.18s ease, transform 0.15s ease;
 
-    &:hover { background: var(--ink-800); color: var(--paper-0); }
+    &:hover { background: var(--ink-800); color: var(--paper-0); transform: translateX(2px); }
 
     &.active {
       background: rgba(16, 185, 129, 0.15);
@@ -226,7 +240,7 @@
     width: 260px;
     z-index: 100;
     transform: translateX(-100%);
-    transition: transform 0.2s ease;
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
     box-shadow: 8px 0 24px rgba(0, 0, 0, 0.2);
 
     &.open { transform: translateX(0); }

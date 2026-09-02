@@ -17,7 +17,7 @@
           </div>
           <div class="appt-info">
             <strong>{{ appt.title }}</strong>
-            <span class="appt-contact">{{ appt.contact.name || appt.contact.phoneNumber }} · via {{ appt.whatsAppConnectionLabel }}</span>
+            <span class="appt-contact">{{ appt.contact.name || (appt.contact.phoneNumber | phoneFormat) }} · via {{ appt.whatsAppConnectionLabel }}</span>
             @if (appt.notes) {
               <span class="appt-notes">{{ appt.notes }}</span>
             }
